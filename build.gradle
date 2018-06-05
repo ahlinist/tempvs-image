@@ -12,11 +12,19 @@ repositories {
 }
 
 dependencies {
+    //jersey-bom
+    implementation "org.glassfish.jersey:jersey-bom:$jerseyVersion"
+    //jersey
+    compile "org.glassfish.jersey.containers:jersey-container-servlet:$jerseyVersion"
+    compile "org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion"
+    //json
+    compile "org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion"
     //jetty
     compile "org.eclipse.jetty:jetty-servlet:$jettyVersion"
     compile "org.eclipse.jetty:jetty-webapp:$jettyVersion"
     //testing
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-bundle:$jerseyVersion"
+    testCompile 'org.mockito:mockito-core:2.18.3'
 }
 
 task copyToLib(type: Copy) {
