@@ -5,11 +5,12 @@ import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import org.bson.types.ObjectId;
 
-import javax.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class ImageService {
+
+    private static final String DEFAULT_IMAGE_NAME = "default_image.gif";
 
     private String tokenHash;
     private GridFSFactory gridFSFactory;
@@ -25,11 +26,10 @@ public class ImageService {
         GridFSDBFile gridFSDBFile = gridFS.findOne(objectId);
 
         if (gridFSDBFile == null) {
-            throw new NotFoundException();
+            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+            return classloader.getResourceAsStream(DEFAULT_IMAGE_NAME);
         }
 
-        try(InputStream inputStream = gridFSDBFile.getInputStream()) {
-            return inputStream;
-        }
+        return gridFSDBFile.getInputStream();
     }
 }

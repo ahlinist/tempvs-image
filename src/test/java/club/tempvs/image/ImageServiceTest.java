@@ -10,8 +10,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.ws.rs.NotFoundException;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -22,6 +20,7 @@ import java.io.InputStream;
 @RunWith(MockitoJUnitRunner.class)
 public class ImageServiceTest {
 
+    private static final String DEFAULT_IMAGE_NAME = "default_image.gif";
     private static final String HEX_ID = new ObjectId().toString();
     private static final String COLLECTION = "collection";
 
@@ -57,24 +56,5 @@ public class ImageServiceTest {
         verifyNoMoreInteractions(gridFSDBFile);
 
         assertTrue(result instanceof InputStream);
-    }
-
-
-    @Test(expected = NotFoundException.class)
-    public void testGetImageStreamForMissingSource() throws IOException {
-        ObjectId objectId = new ObjectId(HEX_ID);
-
-        when(gridFSFactory.getGridFS(COLLECTION)).thenReturn(gridFS);
-        when(gridFS.findOne(objectId)).thenReturn(null);
-
-        InputStream result = imageService.getImageStream(HEX_ID, COLLECTION);
-
-        verify(gridFSFactory).getGridFS(COLLECTION);
-        verify(gridFS).findOne(objectId);
-        verifyNoMoreInteractions(gridFSFactory);
-        verifyNoMoreInteractions(gridFS);
-        verifyNoMoreInteractions(gridFSDBFile);
-
-        assertTrue(result == null);
     }
 }

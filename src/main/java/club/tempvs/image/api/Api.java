@@ -31,8 +31,6 @@ public class Api {
             return Response.ok(inputStream).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
             return Response.serverError().build();
         }
