@@ -26,13 +26,14 @@ public class Api {
     @Path("get")
     @Produces("image/jpg")
     public Response get(@QueryParam("id") String id, @QueryParam("collection") String collection) {
+        InputStream inputStream;
+
         try {
-            InputStream inputStream = imageService.getImageStream(id, collection);
-            return Response.ok(inputStream).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            inputStream = imageService.getImageStream(id, collection);
         } catch (Exception e) {
-            return Response.serverError().build();
+            inputStream = imageService.getDefaultImage();
         }
+
+        return Response.ok(inputStream).build();
     }
 }
