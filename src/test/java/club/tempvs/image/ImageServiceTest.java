@@ -99,9 +99,10 @@ public class ImageServiceTest {
 
         imageService.delete(deletePayload, TOKEN);
 
-        verify(deletePayload, times(2)).getImages();
-        verify(image, times(2)).getCollection();
-        verify(image, times(2)).getObjectId();
+        verify(deletePayload).validate();
+        verify(deletePayload).getImages();
+        verify(image).getCollection();
+        verify(image).getObjectId();
         verify(gridFSFactory).getGridFS(COLLECTION);
         verify(gridFS).findOne(objectId);
         verify(gridFS).remove(gridFSDBFile);
@@ -122,31 +123,10 @@ public class ImageServiceTest {
         verifyNoMoreInteractions(deletePayload);
     }
 
-    @Test(expected = PayloadMalformedException.class)
+    @Test(expected = NullPointerException.class)
     public void testDeletePayloadNull() {
         imageService.delete(null, TOKEN);
 
-        verifyNoMoreInteractions(gridFSFactory);
-        verifyNoMoreInteractions(gridFS);
-        verifyNoMoreInteractions(gridFSDBFile);
-        verifyNoMoreInteractions(deletePayload);
-        verifyNoMoreInteractions(image);
-    }
-
-    @Test(expected = PayloadMalformedException.class)
-    public void testDeletePayloadMalformed() {
-        List<Image> images = new ArrayList<>();
-        images.add(image);
-
-        when(deletePayload.getImages()).thenReturn(images);
-        when(image.getObjectId()).thenReturn(null);
-        when(image.getCollection()).thenReturn(COLLECTION);
-
-        imageService.delete(deletePayload, TOKEN);
-
-        verify(deletePayload).getImages();
-        verify(image).getCollection();
-        verify(image).getObjectId();
         verifyNoMoreInteractions(gridFSFactory);
         verifyNoMoreInteractions(gridFS);
         verifyNoMoreInteractions(gridFSDBFile);
