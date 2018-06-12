@@ -55,6 +55,7 @@ public class ImageService {
             Base64.Decoder decoder = Base64.getDecoder();
             byte[] bytes = decoder.decode(image.getContent());
             GridFSInputFile gridFSInputFile = gridFS.createFile(bytes);
+            gridFSInputFile.save();
             String objectId = gridFSInputFile.getId().toString();
             imagePayload.addImage(new Image(objectId, collection, image.getImageInfo()));
         }
