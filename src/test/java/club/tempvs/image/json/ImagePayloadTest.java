@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DeletePayloadTest {
+public class ImagePayloadTest {
 
     private static final String HEX_ID = new ObjectId().toString();
     private static final String COLLECTION = "collection";
@@ -21,23 +21,23 @@ public class DeletePayloadTest {
     @Mock
     private Image image;
 
-    private DeletePayload deletePayload;
+    private ImagePayload imagePayload;
 
     @Before
     public void setup() {
-        deletePayload = new DeletePayload();
+        imagePayload = new ImagePayload();
     }
 
     @Test
     public void testValidate() {
         List<Image> images = new ArrayList<>();
         images.add(image);
-        deletePayload.setImages(images);
+        imagePayload.setImages(images);
 
         when(image.getObjectId()).thenReturn(HEX_ID);
         when(image.getCollection()).thenReturn(COLLECTION);
 
-        deletePayload.validate();
+        imagePayload.validate();
 
         verify(image).getObjectId();
         verify(image).getCollection();
@@ -46,7 +46,7 @@ public class DeletePayloadTest {
 
     @Test(expected = PayloadMalformedException.class)
     public void testValidateForNoImages() {
-        deletePayload.validate();
+        imagePayload.validate();
 
         verifyNoMoreInteractions(image);
     }
@@ -55,12 +55,12 @@ public class DeletePayloadTest {
     public void testValidateForInvalidImages() {
         List<Image> images = new ArrayList<>();
         images.add(image);
-        deletePayload.setImages(images);
+        imagePayload.setImages(images);
 
         when(image.getObjectId()).thenReturn(null);
         when(image.getCollection()).thenReturn(COLLECTION);
 
-        deletePayload.validate();
+        imagePayload.validate();
 
         verify(image).getObjectId();
         verify(image).getCollection();

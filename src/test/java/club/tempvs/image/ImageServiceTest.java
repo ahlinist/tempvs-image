@@ -1,9 +1,8 @@
 package club.tempvs.image;
 
 import club.tempvs.image.auth.AuthenticationException;
-import club.tempvs.image.json.DeletePayload;
+import club.tempvs.image.json.ImagePayload;
 import club.tempvs.image.json.Image;
-import club.tempvs.image.json.PayloadMalformedException;
 import club.tempvs.image.mongodb.GridFSFactory;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
@@ -38,7 +37,7 @@ public class ImageServiceTest {
     @Mock
     private GridFSFactory gridFSFactory;
     @Mock
-    private DeletePayload deletePayload;
+    private ImagePayload imagePayload;
     @Mock
     private Image image;
 
@@ -91,16 +90,16 @@ public class ImageServiceTest {
         List<Image> images = new ArrayList<>();
         images.add(image);
 
-        when(deletePayload.getImages()).thenReturn(images);
+        when(imagePayload.getImages()).thenReturn(images);
         when(image.getObjectId()).thenReturn(HEX_ID);
         when(image.getCollection()).thenReturn(COLLECTION);
         when(gridFSFactory.getGridFS(COLLECTION)).thenReturn(gridFS);
         when(gridFS.findOne(objectId)).thenReturn(gridFSDBFile);
 
-        imageService.delete(deletePayload, TOKEN);
+        imageService.delete(imagePayload, TOKEN);
 
-        verify(deletePayload).validate();
-        verify(deletePayload).getImages();
+        verify(imagePayload).validate();
+        verify(imagePayload).getImages();
         verify(image).getCollection();
         verify(image).getObjectId();
         verify(gridFSFactory).getGridFS(COLLECTION);
@@ -109,18 +108,18 @@ public class ImageServiceTest {
         verifyNoMoreInteractions(gridFSFactory);
         verifyNoMoreInteractions(gridFS);
         verifyNoMoreInteractions(gridFSDBFile);
-        verifyNoMoreInteractions(deletePayload);
+        verifyNoMoreInteractions(imagePayload);
         verifyNoMoreInteractions(image);
     }
 
     @Test(expected = AuthenticationException.class)
     public void testDeleteUnauthorized() {
-        imageService.delete(deletePayload, "wrong_token");
+        imageService.delete(imagePayload, "wrong_token");
 
         verifyNoMoreInteractions(gridFSFactory);
         verifyNoMoreInteractions(gridFS);
         verifyNoMoreInteractions(gridFSDBFile);
-        verifyNoMoreInteractions(deletePayload);
+        verifyNoMoreInteractions(imagePayload);
     }
 
     @Test(expected = NullPointerException.class)
@@ -130,7 +129,7 @@ public class ImageServiceTest {
         verifyNoMoreInteractions(gridFSFactory);
         verifyNoMoreInteractions(gridFS);
         verifyNoMoreInteractions(gridFSDBFile);
-        verifyNoMoreInteractions(deletePayload);
+        verifyNoMoreInteractions(imagePayload);
         verifyNoMoreInteractions(image);
     }
 }
