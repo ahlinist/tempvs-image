@@ -6,6 +6,10 @@ public class Image {
     private String collection;
     private String imageInfo;
 
+    public Image() {
+
+    }
+
     public Image(String objectId, String collection, String imageInfo) {
         this.objectId = objectId;
         this.collection = collection;
