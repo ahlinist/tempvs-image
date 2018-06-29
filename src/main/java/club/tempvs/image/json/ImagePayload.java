@@ -1,9 +1,6 @@
 package club.tempvs.image.json;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ImagePayload implements Payload {
 
@@ -14,6 +11,7 @@ public class ImagePayload implements Payload {
     }
 
     public void setImages(List<Image> images) {
+        images.removeIf(Objects::isNull);
         this.images = images;
     }
 
