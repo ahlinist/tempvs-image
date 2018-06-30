@@ -71,7 +71,10 @@ public class ImageService {
             GridFS gridFS = gridFSFactory.getGridFS(image.getCollection());
             ObjectId objectId = new ObjectId(image.getObjectId());
             GridFSDBFile gridFSDBFile = gridFS.findOne(objectId);
-            gridFS.remove(gridFSDBFile);
+
+            if (gridFSDBFile != null) {
+                gridFS.remove(gridFSDBFile);
+            }
         }
     }
 

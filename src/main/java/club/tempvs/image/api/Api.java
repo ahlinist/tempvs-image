@@ -70,6 +70,7 @@ public class Api {
         } catch (PayloadMalformedException e) {
             return Response.status(400, e.getMessage()).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.serverError().entity(e.getMessage()).build();
         }
     }
