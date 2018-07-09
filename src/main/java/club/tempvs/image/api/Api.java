@@ -58,7 +58,7 @@ public class Api {
         }
     }
 
-    @DELETE
+    @POST
     @Path("delete")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response delete(ImagePayload payload) {
