@@ -1,11 +1,8 @@
 package club.tempvs.image;
 
 import club.tempvs.image.auth.AuthenticationException;
-import club.tempvs.image.json.ImageSketch;
-import club.tempvs.image.json.StorePayload;
+import club.tempvs.image.json.*;
 import club.tempvs.image.mongodb.GridFSFactory;
-import club.tempvs.image.json.ImagePayload;
-import club.tempvs.image.json.Image;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
@@ -13,6 +10,8 @@ import org.bson.types.ObjectId;
 
 import java.io.InputStream;
 import java.util.Base64;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ImageService {
 
@@ -68,19 +67,48 @@ public class ImageService {
         payload.validate();
 
         for (Image image : payload.getImages()) {
-            GridFS gridFS = gridFSFactory.getGridFS(image.getCollection());
-            ObjectId objectId = new ObjectId(image.getObjectId());
-            GridFSDBFile gridFSDBFile = gridFS.findOne(objectId);
+            deleteSingleImage(image.getCollection(), image.getObjectId());
+        }
+    }
 
-            if (gridFSDBFile != null) {
-                gridFS.remove(gridFSDBFile);
-            }
+    public void delete(String collection, String id, String token) {
+        authenticate(token);
+        validate(collection, id);
+        deleteSingleImage(collection, id);
+    }
+
+    private void deleteSingleImage(String collection, String id) {
+        GridFS gridFS = gridFSFactory.getGridFS(collection);
+        ObjectId objectId = new ObjectId(id);
+        GridFSDBFile gridFSDBFile = gridFS.findOne(objectId);
+
+        if (gridFSDBFile != null) {
+            gridFS.remove(gridFSDBFile);
         }
     }
 
     private void authenticate(String receivedToken) {
         if (receivedToken == null || !receivedToken.equals(tokenHash)) {
             throw new AuthenticationException();
+        }
+    }
+
+    private void validate(String collection, String id) {
+        Boolean payloadValid = Boolean.TRUE;
+        Set<String> errors = new HashSet<>();
+
+        if (collection == null) {
+            payloadValid = Boolean.FALSE;
+            errors.add("Payload contains entries with missing image content");
+        }
+
+        if (id == null) {
+            payloadValid = Boolean.FALSE;
+            errors.add("Payload contains entries with missing collection");
+        }
+
+        if (!payloadValid) {
+            throw new IllegalArgumentException(String.join(", ", errors));
         }
     }
 }

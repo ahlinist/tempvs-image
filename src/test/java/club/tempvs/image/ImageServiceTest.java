@@ -3,6 +3,7 @@ package club.tempvs.image;
 import club.tempvs.image.auth.AuthenticationException;
 import club.tempvs.image.json.ImagePayload;
 import club.tempvs.image.json.Image;
+import club.tempvs.image.json.PayloadMalformedException;
 import club.tempvs.image.mongodb.GridFSFactory;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
@@ -87,6 +88,23 @@ public class ImageServiceTest {
     @Test
     public void testDelete() {
         ObjectId objectId = new ObjectId(HEX_ID);
+
+        when(gridFSFactory.getGridFS(COLLECTION)).thenReturn(gridFS);
+        when(gridFS.findOne(objectId)).thenReturn(gridFSDBFile);
+
+        imageService.delete(COLLECTION, HEX_ID, TOKEN);
+
+        verify(gridFSFactory).getGridFS(COLLECTION);
+        verify(gridFS).findOne(objectId);
+        verify(gridFS).remove(gridFSDBFile);
+        verifyNoMoreInteractions(gridFSFactory);
+        verifyNoMoreInteractions(gridFS);
+        verifyNoMoreInteractions(gridFSDBFile);
+    }
+
+    @Test
+    public void testDeleteMultiple() {
+        ObjectId objectId = new ObjectId(HEX_ID);
         List<Image> images = new ArrayList<>();
         images.add(image);
 
@@ -125,6 +143,17 @@ public class ImageServiceTest {
     @Test(expected = NullPointerException.class)
     public void testDeletePayloadNull() {
         imageService.delete(null, TOKEN);
+
+        verifyNoMoreInteractions(gridFSFactory);
+        verifyNoMoreInteractions(gridFS);
+        verifyNoMoreInteractions(gridFSDBFile);
+        verifyNoMoreInteractions(imagePayload);
+        verifyNoMoreInteractions(image);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteWithInsufficientParams() {
+        imageService.delete(null, null, TOKEN);
 
         verifyNoMoreInteractions(gridFSFactory);
         verifyNoMoreInteractions(gridFS);

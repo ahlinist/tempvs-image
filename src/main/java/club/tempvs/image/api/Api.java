@@ -74,4 +74,20 @@ public class Api {
             return Response.serverError().entity(e.getMessage()).build();
         }
     }
+
+    @DELETE
+    @Path("delete/{collection}/{id}")
+    public Response delete(@PathParam("collection") String collection, @PathParam("id") String id) {
+        try {
+            imageService.delete(collection, id, token);
+            return Response.ok().build();
+        } catch (AuthenticationException e) {
+            return Response.status(401).build();
+        } catch (PayloadMalformedException e) {
+            return Response.status(400, e.getMessage()).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity(e.getMessage()).build();
+        }
+    }
 }
