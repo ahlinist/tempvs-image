@@ -1,6 +1,7 @@
 package club.tempvs.image;
 
 import club.tempvs.image.auth.AuthenticationException;
+import club.tempvs.image.auth.TokenHelper;
 import club.tempvs.image.json.ImagePayload;
 import club.tempvs.image.json.Image;
 import club.tempvs.image.json.PayloadMalformedException;
@@ -36,6 +37,8 @@ public class ImageServiceTest {
     @Mock
     GridFSDBFile gridFSDBFile;
     @Mock
+    TokenHelper tokenHelper;
+    @Mock
     private GridFSFactory gridFSFactory;
     @Mock
     private ImagePayload imagePayload;
@@ -44,7 +47,9 @@ public class ImageServiceTest {
 
     @Before
     public void setup() {
-        imageService = new ImageService("security_token", gridFSFactory);
+        when(tokenHelper.getTokenHash()).thenReturn(TOKEN);
+
+        imageService = new ImageService(tokenHelper, gridFSFactory);
     }
 
     @Test

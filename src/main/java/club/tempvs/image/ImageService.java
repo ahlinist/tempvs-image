@@ -1,6 +1,7 @@
 package club.tempvs.image;
 
 import club.tempvs.image.auth.AuthenticationException;
+import club.tempvs.image.auth.TokenHelper;
 import club.tempvs.image.json.*;
 import club.tempvs.image.mongodb.GridFSFactory;
 import com.mongodb.gridfs.GridFS;
@@ -15,13 +16,14 @@ import java.util.Set;
 
 public class ImageService {
 
+    private static final String ERROR_DELIMITER = ", ";
     private static final String DEFAULT_IMAGE_NAME = "default_image.gif";
 
     private String tokenHash;
     private GridFSFactory gridFSFactory;
 
-    public ImageService(String tokenHash, GridFSFactory gridFSFactory) {
-        this.tokenHash = tokenHash;
+    public ImageService(TokenHelper tokenHelper, GridFSFactory gridFSFactory) {
+        this.tokenHash = tokenHelper.getTokenHash();
         this.gridFSFactory = gridFSFactory;
     }
 
@@ -108,7 +110,7 @@ public class ImageService {
         }
 
         if (!payloadValid) {
-            throw new IllegalArgumentException(String.join(", ", errors));
+            throw new IllegalArgumentException(String.join(ERROR_DELIMITER, errors));
         }
     }
 }
