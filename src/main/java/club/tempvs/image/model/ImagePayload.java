@@ -1,19 +1,24 @@
-package club.tempvs.image.json;
+package club.tempvs.image.model;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import club.tempvs.rest.json.Payload;
+import club.tempvs.rest.json.PayloadMalformedException;
 
-public class StorePayload implements Payload {
+public class ImagePayload implements Payload {
 
-    List<ImageSketch> images;
+    private List<Image> images = new ArrayList<>();
 
-    public List<ImageSketch> getImages() {
+    public List<Image> getImages() {
         return images;
     }
 
-    public void setImages(List<ImageSketch> images) {
+    public void setImages(List<Image> images) {
+        images.removeIf(Objects::isNull);
         this.images = images;
+    }
+
+    public void addImage(Image image) {
+        images.add(image);
     }
 
     public void validate() {
@@ -24,13 +29,13 @@ public class StorePayload implements Payload {
         Boolean payloadValid = Boolean.TRUE;
         Set<String> errors = new HashSet<>();
 
-        for (ImageSketch imageSketch : images) {
-            if (imageSketch.getContent() == null) {
+        for (Image image : images) {
+            if (image.getObjectId() == null) {
                 payloadValid = Boolean.FALSE;
-                errors.add("Payload contains entries with missing image content");
+                errors.add("Payload contains entries with missing objectId");
             }
 
-            if (imageSketch.getCollection() == null) {
+            if (image.getCollection() == null) {
                 payloadValid = Boolean.FALSE;
                 errors.add("Payload contains entries with missing collection");
             }

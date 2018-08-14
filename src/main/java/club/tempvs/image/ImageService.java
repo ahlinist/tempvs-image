@@ -1,8 +1,11 @@
 package club.tempvs.image;
 
-import club.tempvs.image.auth.AuthenticationException;
-import club.tempvs.image.auth.TokenHelper;
-import club.tempvs.image.json.*;
+import club.tempvs.image.model.Image;
+import club.tempvs.image.model.ImagePayload;
+import club.tempvs.image.model.ImageSketch;
+import club.tempvs.image.model.StorePayload;
+import club.tempvs.rest.auth.AuthenticationException;
+import club.tempvs.rest.auth.TokenHelper;
 import club.tempvs.image.mongodb.GridFSFactory;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;

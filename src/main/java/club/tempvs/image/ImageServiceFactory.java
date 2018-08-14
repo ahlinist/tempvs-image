@@ -1,6 +1,6 @@
 package club.tempvs.image;
 
-import club.tempvs.image.auth.TokenHelper;
+import club.tempvs.rest.auth.TokenHelper;
 import club.tempvs.image.mongodb.GridFSFactory;
 
 public class ImageServiceFactory {

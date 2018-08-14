@@ -1,4 +1,4 @@
-package club.tempvs.image.json;
+package club.tempvs.image.model;
 
 public class Image {
 

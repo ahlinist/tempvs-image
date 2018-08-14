@@ -1,30 +1,21 @@
-package club.tempvs.image.api;
+package club.tempvs.image;
 
-import club.tempvs.image.auth.AuthenticationException;
-import club.tempvs.image.json.ImagePayload;
-import club.tempvs.image.ImageService;
-import club.tempvs.image.ImageServiceFactory;
-import club.tempvs.image.json.PayloadMalformedException;
-import club.tempvs.image.json.StorePayload;
+import club.tempvs.rest.auth.AuthenticationException;
+import club.tempvs.image.model.ImagePayload;
+import club.tempvs.rest.json.PayloadMalformedException;
+import club.tempvs.image.model.StorePayload;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.InputStream;
 
 @Path("api")
-public class Api {
+public class ImageApi {
 
     private static ImageService imageService = ImageServiceFactory.getInstance();
 
     @HeaderParam("token")
     private String token;
-
-    @GET
-    @Path("ping")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getPong() {
-        return "pong!";
-    }
 
     @GET
     @Path("get")
