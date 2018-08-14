@@ -3,8 +3,8 @@ package club.tempvs.image.model;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import club.tempvs.rest.json.Payload;
-import club.tempvs.rest.json.PayloadMalformedException;
+import club.tempvs.rest.model.Payload;
+import club.tempvs.rest.model.PayloadMalformedException;
 
 public class StorePayload implements Payload {
 

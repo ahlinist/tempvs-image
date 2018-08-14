@@ -4,7 +4,7 @@ import club.tempvs.rest.auth.AuthenticationException;
 import club.tempvs.rest.auth.TokenHelper;
 import club.tempvs.image.model.ImagePayload;
 import club.tempvs.image.model.Image;
-import club.tempvs.rest.json.PayloadMalformedException;
+import club.tempvs.rest.model.PayloadMalformedException;
 import club.tempvs.image.mongodb.GridFSFactory;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;

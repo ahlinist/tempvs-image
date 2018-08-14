@@ -1,8 +1,8 @@
 package club.tempvs.image.model;
 
 import java.util.*;
-import club.tempvs.rest.json.Payload;
-import club.tempvs.rest.json.PayloadMalformedException;
+import club.tempvs.rest.model.Payload;
+import club.tempvs.rest.model.PayloadMalformedException;
 
 public class ImagePayload implements Payload {
 

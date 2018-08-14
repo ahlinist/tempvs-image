@@ -2,7 +2,7 @@ package club.tempvs.image;
 
 import club.tempvs.rest.auth.AuthenticationException;
 import club.tempvs.image.model.ImagePayload;
-import club.tempvs.rest.json.PayloadMalformedException;
+import club.tempvs.rest.model.PayloadMalformedException;
 import club.tempvs.image.model.StorePayload;
 
 import javax.ws.rs.*;

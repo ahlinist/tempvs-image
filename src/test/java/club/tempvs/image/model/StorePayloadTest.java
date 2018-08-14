@@ -1,7 +1,5 @@
 package club.tempvs.image.model;
 
-import club.tempvs.image.model.ImageSketch;
-import club.tempvs.image.model.StorePayload;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import club.tempvs.rest.json.PayloadMalformedException;
+import club.tempvs.rest.model.PayloadMalformedException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StorePayloadTest {
