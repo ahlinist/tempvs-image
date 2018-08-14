@@ -1,1 +1,1 @@
-web: java -cp "build/libs/*" club.tempvs.image.Main
+web: java -cp "build/libs/*" club.tempvs.rest.Main
