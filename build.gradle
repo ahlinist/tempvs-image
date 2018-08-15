@@ -21,23 +21,16 @@ dependencies {
     testCompile 'org.mockito:mockito-core:2.18.3'
 }
 
-jar {
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-
-    duplicatesStrategy = 'exclude'
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+task copyToLib(type: Copy) {
+    into "$buildDir/libs"
+    from configurations.compile
 }
 
 task stage() {
-    dependsOn clean, jar
+    dependsOn clean, copyToLib, jar
 }
 
 tasks.stage.doLast() {
     delete "build/tmp"
     delete "build/classes"
-    delete "build/resources"
-    delete "build/reports"
-    delete "build/test-results"
 }
