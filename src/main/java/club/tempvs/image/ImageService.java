@@ -4,7 +4,6 @@ import club.tempvs.image.model.Image;
 import club.tempvs.image.model.ImagePayload;
 import club.tempvs.image.model.ImageSketch;
 import club.tempvs.image.model.StorePayload;
-import club.tempvs.rest.auth.AuthenticationException;
 import club.tempvs.rest.auth.TokenHelper;
 import club.tempvs.image.mongodb.GridFSFactory;
 import com.mongodb.gridfs.GridFS;
@@ -22,11 +21,11 @@ public class ImageService {
     private static final String ERROR_DELIMITER = ", ";
     private static final String DEFAULT_IMAGE_NAME = "default_image.gif";
 
-    private String tokenHash;
+    private TokenHelper tokenHelper;
     private GridFSFactory gridFSFactory;
 
     public ImageService(TokenHelper tokenHelper, GridFSFactory gridFSFactory) {
-        this.tokenHash = tokenHelper.getTokenHash();
+        this.tokenHelper = tokenHelper;
         this.gridFSFactory = gridFSFactory;
     }
 
@@ -48,7 +47,7 @@ public class ImageService {
     }
 
     public ImagePayload store(StorePayload payload, String token) {
-        authenticate(token);
+        tokenHelper.authenticate(token);
         payload.validate();
 
         ImagePayload imagePayload = new ImagePayload();
@@ -68,7 +67,7 @@ public class ImageService {
     }
 
     public void delete(ImagePayload payload, String token) {
-        authenticate(token);
+        tokenHelper.authenticate(token);
         payload.validate();
 
         for (Image image : payload.getImages()) {
@@ -77,8 +76,8 @@ public class ImageService {
     }
 
     public void delete(String collection, String id, String token) {
-        authenticate(token);
-        validate(collection, id);
+        tokenHelper.authenticate(token);
+        validateDeletion(collection, id);
         deleteSingleImage(collection, id);
     }
 
@@ -92,13 +91,7 @@ public class ImageService {
         }
     }
 
-    private void authenticate(String receivedToken) {
-        if (receivedToken == null || !receivedToken.equals(tokenHash)) {
-            throw new AuthenticationException();
-        }
-    }
-
-    private void validate(String collection, String id) {
+    private void validateDeletion(String collection, String id) {
         Boolean payloadValid = Boolean.TRUE;
         Set<String> errors = new HashSet<>();
 

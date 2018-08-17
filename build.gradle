@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     //tempvs rest api
-    compile "club.tempvs:rest:1.4"
+    compile "club.tempvs:rest:1.6"
     //mongoDB
     compile 'org.mongodb:mongodb-driver:3.7.1'
     //testing

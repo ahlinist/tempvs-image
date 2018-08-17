@@ -4,7 +4,6 @@ import club.tempvs.rest.auth.AuthenticationException;
 import club.tempvs.rest.auth.TokenHelper;
 import club.tempvs.image.model.ImagePayload;
 import club.tempvs.image.model.Image;
-import club.tempvs.rest.model.PayloadMalformedException;
 import club.tempvs.image.mongodb.GridFSFactory;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
@@ -47,8 +46,6 @@ public class ImageServiceTest {
 
     @Before
     public void setup() {
-        when(tokenHelper.getTokenHash()).thenReturn(TOKEN);
-
         imageService = new ImageService(tokenHelper, gridFSFactory);
     }
 
@@ -102,9 +99,11 @@ public class ImageServiceTest {
         verify(gridFSFactory).getGridFS(COLLECTION);
         verify(gridFS).findOne(objectId);
         verify(gridFS).remove(gridFSDBFile);
+        verify(tokenHelper).authenticate(TOKEN);
         verifyNoMoreInteractions(gridFSFactory);
         verifyNoMoreInteractions(gridFS);
         verifyNoMoreInteractions(gridFSDBFile);
+        verifyNoMoreInteractions(tokenHelper);
     }
 
     @Test
@@ -128,32 +127,39 @@ public class ImageServiceTest {
         verify(gridFSFactory).getGridFS(COLLECTION);
         verify(gridFS).findOne(objectId);
         verify(gridFS).remove(gridFSDBFile);
+        verify(tokenHelper).authenticate(TOKEN);
         verifyNoMoreInteractions(gridFSFactory);
         verifyNoMoreInteractions(gridFS);
         verifyNoMoreInteractions(gridFSDBFile);
         verifyNoMoreInteractions(imagePayload);
         verifyNoMoreInteractions(image);
+        verifyNoMoreInteractions(tokenHelper);
     }
 
     @Test(expected = AuthenticationException.class)
     public void testDeleteUnauthorized() {
+        doThrow(new AuthenticationException()).when(tokenHelper).authenticate("wrong_token");
         imageService.delete(imagePayload, "wrong_token");
 
+        verify(tokenHelper).authenticate("wrong_token");
         verifyNoMoreInteractions(gridFSFactory);
         verifyNoMoreInteractions(gridFS);
         verifyNoMoreInteractions(gridFSDBFile);
         verifyNoMoreInteractions(imagePayload);
+        verifyNoMoreInteractions(tokenHelper);
     }
 
     @Test(expected = NullPointerException.class)
     public void testDeletePayloadNull() {
         imageService.delete(null, TOKEN);
 
+        verify(tokenHelper).authenticate(TOKEN);
         verifyNoMoreInteractions(gridFSFactory);
         verifyNoMoreInteractions(gridFS);
         verifyNoMoreInteractions(gridFSDBFile);
         verifyNoMoreInteractions(imagePayload);
         verifyNoMoreInteractions(image);
+        verifyNoMoreInteractions(tokenHelper);
     }
 
     @Test(expected = IllegalArgumentException.class)
