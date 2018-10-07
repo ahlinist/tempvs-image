@@ -14,7 +14,7 @@ public class ImageApi {
 
     private static ImageService imageService = ImageServiceFactory.getInstance();
 
-    @HeaderParam("token")
+    @HeaderParam("Authorization")
     private String token;
 
     @GET
