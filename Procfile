@@ -1,1 +1,1 @@
-web: java -cp "build/libs/*" club.tempvs.rest.Main
+web: java $JAVA_OPTS -Dserver.port=$PORT -jar build/libs/tempvs-image*.jar
