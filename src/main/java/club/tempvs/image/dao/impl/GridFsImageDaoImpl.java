@@ -4,6 +4,8 @@ import club.tempvs.image.domain.Image;
 import club.tempvs.image.dao.ImageDao;
 import club.tempvs.image.util.ObjectFactory;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
@@ -29,7 +31,9 @@ public class GridFsImageDaoImpl implements ImageDao {
     private final ObjectFactory objectFactory;
     private final GridFsTemplate gridFsTemplate;
 
-    @Override
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
+    })
     public byte[] get(String id) {
         Query query = buildIdLookupQuery(id);
         GridFSFile gridFSFile = gridFsTemplate.findOne(query);
@@ -47,7 +51,9 @@ public class GridFsImageDaoImpl implements ImageDao {
         }
     }
 
-    @Override
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
+    })
     public Image save(Image image) {
         Optional<String> imageInfo = Optional.ofNullable(image.getImageInfo());
         String content = image.getContent();
@@ -68,13 +74,17 @@ public class GridFsImageDaoImpl implements ImageDao {
         }
     }
 
-    @Override
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
+    })
     public void delete(String id) {
         Query query = buildIdLookupQuery(id);
         gridFsTemplate.delete(query);
     }
 
-    @Override
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
+    })
     public void delete(Image image) {
         delete(image.getObjectId());
     }
