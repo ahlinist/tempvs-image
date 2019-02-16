@@ -3,7 +3,6 @@ package club.tempvs.image.controller;
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.dto.ImagePayload;
 import club.tempvs.image.service.ImageService;
-import club.tempvs.image.util.AuthHelper;
 import club.tempvs.image.util.ObjectFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,37 +22,20 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class ImageControllerTest {
 
-    private static final String TOKEN = "token";
-
     private ImageController imageController;
 
     @Mock
-    private AuthHelper authHelper;
-
-    @Mock
     private ImageService imageService;
-
     @Mock
     private ObjectFactory objectFactory;
-
     @Mock
     private ImagePayload imagePayload, resultImagePayload;
-
     @Mock
     private Image image, resultImage;
 
     @Before
     public void setup() {
-        imageController = new ImageController(authHelper, imageService, objectFactory);
-    }
-
-    @Test
-    public void testPing() {
-        String result = imageController.ping();
-
-        verifyNoMoreInteractions(authHelper, imageService);
-
-        assertEquals("'pong! String is returned back", "pong!", result);
+        imageController = new ImageController(imageService, objectFactory);
     }
 
     @Test
@@ -66,7 +48,7 @@ public class ImageControllerTest {
         ResponseEntity result = imageController.getImage(id);
 
         verify(imageService).getImage(id);
-        verifyNoMoreInteractions(authHelper, imageService);
+        verifyNoMoreInteractions(imageService);
 
         assertEquals("ResponseEntity with OK status is returned", HttpStatus.OK, result.getStatusCode());
         assertEquals("The 'img' byteArrays is returned as a body", image, result.getBody());
@@ -81,13 +63,12 @@ public class ImageControllerTest {
         when(imageService.storeImages(images)).thenReturn(resultImages);
         when(objectFactory.getInstance(ImagePayload.class, resultImages)).thenReturn(resultImagePayload);
 
-        ResponseEntity result = imageController.storeImages(TOKEN, imagePayload);
+        ResponseEntity result = imageController.storeImages(imagePayload);
 
-        verify(authHelper).authenticate(TOKEN);
         verify(imagePayload).getImages();
         verify(imageService).storeImages(images);
         verify(objectFactory).getInstance(ImagePayload.class, resultImages);
-        verifyNoMoreInteractions(image, resultImage, imagePayload, authHelper, objectFactory, imageService);
+        verifyNoMoreInteractions(image, resultImage, imagePayload, objectFactory, imageService);
 
         assertEquals("ResponseEntity with status 200 is returned", HttpStatus.OK, result.getStatusCode());
         assertEquals("ResponseEntity with image list is returned", resultImagePayload, result.getBody());
@@ -99,7 +80,7 @@ public class ImageControllerTest {
 
         when(imagePayload.getImages()).thenReturn(images);
 
-        imageController.storeImages(TOKEN, imagePayload);
+        imageController.storeImages(imagePayload);
     }
 
     @Test
@@ -110,12 +91,11 @@ public class ImageControllerTest {
         when(imagePayload.getImages()).thenReturn(images);
         when(imageService.storeImages(images)).thenReturn(resultImages);
 
-        ResponseEntity result = imageController.storeImages(TOKEN, imagePayload);
+        ResponseEntity result = imageController.storeImages(imagePayload);
 
-        verify(authHelper).authenticate(TOKEN);
         verify(imagePayload).getImages();
         verify(imageService).storeImages(images);
-        verifyNoMoreInteractions(image, resultImage, imagePayload, authHelper, objectFactory, imageService);
+        verifyNoMoreInteractions(image, resultImage, imagePayload, objectFactory, imageService);
 
         assertEquals("ResponseEntity with status 200 is returned", HttpStatus.NO_CONTENT, result.getStatusCode());
         assertEquals("ResponseEntity with image list is returned", null, result.getBody());
@@ -125,11 +105,10 @@ public class ImageControllerTest {
     public void testDelete() {
         String id = "id";
 
-        ResponseEntity result = imageController.delete(TOKEN, id);
+        ResponseEntity result = imageController.delete(id);
 
-        verify(authHelper).authenticate(TOKEN);
         verify(imageService).deleteImage(id);
-        verifyNoMoreInteractions(image, resultImage, imagePayload, authHelper, objectFactory, imageService);
+        verifyNoMoreInteractions(image, resultImage, imagePayload, objectFactory, imageService);
 
         assertEquals("ResponseEntity with status 200 is returned", HttpStatus.OK, result.getStatusCode());
         assertEquals("ResponseEntity with image list is returned", null, result.getBody());
@@ -141,12 +120,11 @@ public class ImageControllerTest {
 
         when(imagePayload.getImages()).thenReturn(images);
 
-        ResponseEntity result = imageController.bulkDelete(TOKEN, imagePayload);
+        ResponseEntity result = imageController.bulkDelete(imagePayload);
 
-        verify(authHelper).authenticate(TOKEN);
         verify(imagePayload).getImages();
         verify(imageService).deleteImages(images);
-        verifyNoMoreInteractions(image, resultImage, imagePayload, authHelper, objectFactory, imageService);
+        verifyNoMoreInteractions(image, resultImage, imagePayload, objectFactory, imageService);
 
         assertEquals("ResponseEntity with status 200 is returned", HttpStatus.OK, result.getStatusCode());
         assertEquals("ResponseEntity with image list is returned", null, result.getBody());
@@ -158,6 +136,6 @@ public class ImageControllerTest {
 
         when(imagePayload.getImages()).thenReturn(images);
 
-        imageController.bulkDelete(TOKEN, imagePayload);
+        imageController.bulkDelete(imagePayload);
     }
 }

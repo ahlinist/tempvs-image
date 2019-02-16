@@ -17,6 +17,8 @@ eureka:
 security:
   user:
     password: ${eureka.password}
+authorization:
+  token: ${TOKEN}
 ---
 spring:
   profiles: local

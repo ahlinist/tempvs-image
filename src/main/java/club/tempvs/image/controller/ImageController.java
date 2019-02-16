@@ -4,7 +4,6 @@ import club.tempvs.image.api.UnauthorizedException;
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.dto.ImagePayload;
 import club.tempvs.image.service.ImageService;
-import club.tempvs.image.util.AuthHelper;
 import club.tempvs.image.util.ObjectFactory;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import lombok.RequiredArgsConstructor;
@@ -26,16 +25,9 @@ import static org.springframework.http.MediaType.*;
 public class ImageController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
-    private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private final AuthHelper authHelper;
     private final ImageService imageService;
     private final ObjectFactory objectFactory;
-
-    @GetMapping("/ping")
-    public String ping() {
-        return "pong!";
-    }
 
     @GetMapping(value = "/image", produces = IMAGE_JPEG_VALUE)
     public ResponseEntity getImage(@RequestParam("id") String id) {
@@ -45,10 +37,7 @@ public class ImageController {
     }
 
     @PostMapping("/image")
-    public ResponseEntity storeImages(
-            @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String token,
-            @RequestBody ImagePayload payload) {
-        authHelper.authenticate(token);
+    public ResponseEntity storeImages(@RequestBody ImagePayload payload) {
         List<Image> images = payload.getImages();
 
         if (images == null || images.isEmpty()) {
@@ -66,19 +55,13 @@ public class ImageController {
     }
 
     @DeleteMapping("/image/{id}")
-    public ResponseEntity delete(
-            @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String token,
-            @PathVariable("id") String id) {
-        authHelper.authenticate(token);
+    public ResponseEntity delete(@PathVariable("id") String id) {
         imageService.deleteImage(id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/image/delete")
-    public ResponseEntity bulkDelete(
-            @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String token,
-            @RequestBody ImagePayload payload) {
-        authHelper.authenticate(token);
+    public ResponseEntity bulkDelete(@RequestBody ImagePayload payload) {
         List<Image> images = payload.getImages();
 
         if (images == null || images.isEmpty()) {
