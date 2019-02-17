@@ -29,8 +29,8 @@ public class ImageController {
     private final ImageService imageService;
     private final ObjectFactory objectFactory;
 
-    @GetMapping(value = "/image", produces = IMAGE_JPEG_VALUE)
-    public ResponseEntity getImage(@RequestParam("id") String id) {
+    @GetMapping(value = "/image/{id}", produces = IMAGE_JPEG_VALUE)
+    public ResponseEntity getImage(@PathVariable("id") String id) {
         //TODO: apply caching
         byte[] image = imageService.getImage(id);
         return ResponseEntity.ok(image);
