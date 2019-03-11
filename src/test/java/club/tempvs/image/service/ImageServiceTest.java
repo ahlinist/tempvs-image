@@ -69,32 +69,15 @@ public class ImageServiceTest {
 
     @Test
     public void testSave() {
-        List<Image> images = Arrays.asList(image, image);
-        List<Image> resultImages = Arrays.asList(resultImage, resultImage);
-
         when(imageDao.save(image)).thenReturn(resultImage);
 
-        List<Image> result = imageService.storeImages(images);
+        Image result = imageService.store(image);
 
-        verify(imageDao, times(2)).save(image);
+        verify(imageDao).save(image);
         verifyNoMoreInteractions(imageDao, image, resultImage);
 
-        assertEquals("A list of images is returned", resultImages, result);
-    }
-
-    @Test
-    public void testSaveFailed() {
-        List<Image> images = Arrays.asList(image, image);
-        List<Image> resultImages = new ArrayList<>();
-
-        when(imageDao.save(image)).thenReturn(null);
-
-        List<Image> result = imageService.storeImages(images);
-
-        verify(imageDao, times(2)).save(image);
-        verifyNoMoreInteractions(imageDao, image, resultImage);
-
-        assertEquals("A list of images is returned", resultImages, result);
+        assertEquals("An updated image is returned", resultImage, result);
+        assertNotEquals("The result image is not the same object as an original one", resultImage, image);
     }
 
     @Test

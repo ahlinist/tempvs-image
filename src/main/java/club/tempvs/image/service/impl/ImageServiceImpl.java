@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +25,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<Image> storeImages(List<Image> images) {
-        return images.stream()
-                .map(imageDao::save)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+    public Image store(Image image) {
+        return imageDao.save(image);
     }
 
     @Override

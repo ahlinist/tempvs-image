@@ -8,7 +8,7 @@ public interface ImageService {
 
     byte[] getImage(String id);
 
-    List<Image> storeImages(List<Image> images);
+    Image store(Image image);
 
     void deleteImage(String id);
 

@@ -55,50 +55,16 @@ public class ImageControllerTest {
     }
 
     @Test
-    public void testStoreImages() {
-        List<Image> images = Arrays.asList(image, image);
-        List<Image> resultImages = Arrays.asList(resultImage, resultImage);
+    public void testStore() {
+        when(imageService.store(image)).thenReturn(resultImage);
 
-        when(imagePayload.getImages()).thenReturn(images);
-        when(imageService.storeImages(images)).thenReturn(resultImages);
-        when(objectFactory.getInstance(ImagePayload.class, resultImages)).thenReturn(resultImagePayload);
+        ResponseEntity result = imageController.store(image);
 
-        ResponseEntity result = imageController.storeImages(imagePayload);
-
-        verify(imagePayload).getImages();
-        verify(imageService).storeImages(images);
-        verify(objectFactory).getInstance(ImagePayload.class, resultImages);
-        verifyNoMoreInteractions(image, resultImage, imagePayload, objectFactory, imageService);
+        verify(imageService).store(image);
+        verifyNoMoreInteractions(image, resultImage, imageService);
 
         assertEquals("ResponseEntity with status 200 is returned", HttpStatus.OK, result.getStatusCode());
-        assertEquals("ResponseEntity with image list is returned", resultImagePayload, result.getBody());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testStoreImagesForEmptyPayload() {
-        List<Image> images = new ArrayList<>();
-
-        when(imagePayload.getImages()).thenReturn(images);
-
-        imageController.storeImages(imagePayload);
-    }
-
-    @Test
-    public void testStoreImagesForEmptyResult() {
-        List<Image> images = Arrays.asList(image, image);
-        List<Image> resultImages = new ArrayList<>();
-
-        when(imagePayload.getImages()).thenReturn(images);
-        when(imageService.storeImages(images)).thenReturn(resultImages);
-
-        ResponseEntity result = imageController.storeImages(imagePayload);
-
-        verify(imagePayload).getImages();
-        verify(imageService).storeImages(images);
-        verifyNoMoreInteractions(image, resultImage, imagePayload, objectFactory, imageService);
-
-        assertEquals("ResponseEntity with status 200 is returned", HttpStatus.NO_CONTENT, result.getStatusCode());
-        assertEquals("ResponseEntity with image list is returned", null, result.getBody());
+        assertEquals("ResponseEntity with image list is returned", resultImage, result.getBody());
     }
 
     @Test

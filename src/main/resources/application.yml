@@ -24,8 +24,9 @@ spring:
   profiles: local
 eureka:
   instance:
-    hostname: localhost:8082
+    hostname: localhost
+    secure-port-enabled: false
     non-secure-port-enabled: true
     nonSecurePort: 8082
-    homePageUrl: http://${eureka.instance.hostname}/
+    homePageUrl: http://${eureka.instance.hostname}:${eureka.instance.nonSecurePort}/
     password: password

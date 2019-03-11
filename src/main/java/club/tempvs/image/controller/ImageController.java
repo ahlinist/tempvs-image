@@ -37,21 +37,8 @@ public class ImageController {
     }
 
     @PostMapping("/image")
-    public ResponseEntity storeImages(@RequestBody ImagePayload payload) {
-        List<Image> images = payload.getImages();
-
-        if (images == null || images.isEmpty()) {
-            throw new IllegalArgumentException("Empty storing payload received");
-        }
-
-        List<Image> resultImages = imageService.storeImages(images);
-
-        if (!resultImages.isEmpty()) {
-            ImagePayload resultPayload = objectFactory.getInstance(ImagePayload.class, resultImages);
-            return ResponseEntity.ok(resultPayload);
-        } else {
-            return ResponseEntity.noContent().build();
-        }
+    public ResponseEntity store(@RequestBody Image payload) {
+        return ResponseEntity.ok(imageService.store(payload));
     }
 
     @DeleteMapping("/image/{id}")
