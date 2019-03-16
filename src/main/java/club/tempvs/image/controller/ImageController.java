@@ -4,7 +4,6 @@ import club.tempvs.image.api.UnauthorizedException;
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.dto.ImagePayload;
 import club.tempvs.image.service.ImageService;
-import club.tempvs.image.util.ObjectFactory;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,7 +26,6 @@ public class ImageController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 
     private final ImageService imageService;
-    private final ObjectFactory objectFactory;
 
     @GetMapping(value = "/image/{id}", produces = IMAGE_JPEG_VALUE)
     public ResponseEntity getImage(@PathVariable("id") String id) {
@@ -37,8 +35,8 @@ public class ImageController {
     }
 
     @PostMapping("/image")
-    public ResponseEntity store(@RequestBody Image payload) {
-        return ResponseEntity.ok(imageService.store(payload));
+    public Image store(@RequestBody Image payload) {
+        return imageService.store(payload);
     }
 
     @DeleteMapping("/image/{id}")

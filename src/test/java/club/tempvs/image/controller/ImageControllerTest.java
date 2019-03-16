@@ -29,13 +29,13 @@ public class ImageControllerTest {
     @Mock
     private ObjectFactory objectFactory;
     @Mock
-    private ImagePayload imagePayload, resultImagePayload;
+    private ImagePayload imagePayload;
     @Mock
     private Image image, resultImage;
 
     @Before
     public void setup() {
-        imageController = new ImageController(imageService, objectFactory);
+        imageController = new ImageController(imageService);
     }
 
     @Test
@@ -58,13 +58,12 @@ public class ImageControllerTest {
     public void testStore() {
         when(imageService.store(image)).thenReturn(resultImage);
 
-        ResponseEntity result = imageController.store(image);
+        Image result = imageController.store(image);
 
         verify(imageService).store(image);
         verifyNoMoreInteractions(image, resultImage, imageService);
 
-        assertEquals("ResponseEntity with status 200 is returned", HttpStatus.OK, result.getStatusCode());
-        assertEquals("ResponseEntity with image list is returned", resultImage, result.getBody());
+        assertEquals("ResponseEntity with image list is returned", resultImage, result);
     }
 
     @Test
