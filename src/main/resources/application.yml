@@ -1,3 +1,5 @@
+server:
+  port: ${PORT:8082}
 spring:
   data:
     mongodb:
@@ -7,16 +9,16 @@ eureka:
     serviceUrl:
       defaultZone: ${EUREKA_URL:http://user:password@localhost:8084}/eureka/
   instance:
-    hostname: ${DOMAIN_NAME}
+    hostname: ${DOMAIN_NAME:localhost}
     secure-port-enabled: true
     non-secure-port-enabled: false
     statusPageUrl: https://${eureka.instance.hostname}/info
     healthCheckUrl: https://${eureka.instance.hostname}/health
     homePageUrl: https://${eureka.instance.hostname}/
-  password: ${EUREKA_PASSWORD}
+  password: ${EUREKA_PASSWORD:password}
 security:
   user:
-    password: ${eureka.password}
+    password: ${eureka.password:password}
 authorization:
   token: ${TOKEN}
 ---
@@ -24,9 +26,7 @@ spring:
   profiles: local
 eureka:
   instance:
-    hostname: localhost
     secure-port-enabled: false
     non-secure-port-enabled: true
     nonSecurePort: 8082
     homePageUrl: http://${eureka.instance.hostname}:${eureka.instance.nonSecurePort}/
-    password: password
