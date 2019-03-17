@@ -29,3 +29,4 @@ spring:
 eureka:
   instance:
     homePageUrl: http://${eureka.instance.hostname}:8082/
+    non-secure-port: 8082
