@@ -27,6 +27,7 @@ public class GridFsImageDaoImpl implements ImageDao {
 
     private static final String ID = "_id";
     private static final Base64.Decoder BASE_64_DECODER = Base64.getDecoder();
+    private static final String DEFAULT_IMAGE_NAME = "default_image.gif";
 
     private final ObjectFactory objectFactory;
     private final GridFsTemplate gridFsTemplate;
@@ -46,8 +47,8 @@ public class GridFsImageDaoImpl implements ImageDao {
 
         try(InputStream inputStream = gridFsResource.getInputStream()) {
             return IOUtils.toByteArray(inputStream);
-        } catch (Exception e) {
-            return null;
+        } catch (IOException e) {
+            return getDefaultImage();
         }
     }
 
@@ -91,5 +92,15 @@ public class GridFsImageDaoImpl implements ImageDao {
 
     private Query buildIdLookupQuery(String id) {
         return objectFactory.getInstance(Query.class, Criteria.where(ID).is(id));
+    }
+
+    private byte[] getDefaultImage() {
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+
+        try(InputStream inputStream = classloader.getResourceAsStream(DEFAULT_IMAGE_NAME)) {
+            return IOUtils.toByteArray(inputStream);
+        } catch (Exception e) {
+            return new byte[]{};
+        }
     }
 }

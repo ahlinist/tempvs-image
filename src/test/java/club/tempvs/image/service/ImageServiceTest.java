@@ -52,22 +52,6 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void testGetImageIfNotFound() {
-        String id = "id";
-        byte[] resultArray = null;
-
-        when(imageDao.get(id)).thenReturn(resultArray);
-
-        byte[] result = imageService.getImage(id);
-
-        verify(imageDao).get(id);
-        verifyNoMoreInteractions(objectFactory);
-
-        assertNotEquals("The empty byte array is NOT returned", resultArray, result);
-        assertTrue(result instanceof byte[]);
-    }
-
-    @Test
     public void testSave() {
         when(imageDao.save(image)).thenReturn(resultImage);
 
