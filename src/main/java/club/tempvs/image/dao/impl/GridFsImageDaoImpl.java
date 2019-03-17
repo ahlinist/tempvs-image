@@ -40,7 +40,7 @@ public class GridFsImageDaoImpl implements ImageDao {
         GridFSFile gridFSFile = gridFsTemplate.findOne(query);
 
         if (gridFSFile == null) {
-            return null;
+            return getDefaultImage();
         }
 
         GridFsResource gridFsResource = gridFsTemplate.getResource(gridFSFile);
