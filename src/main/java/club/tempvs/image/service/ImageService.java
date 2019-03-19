@@ -10,7 +10,7 @@ public interface ImageService {
 
     Image store(Image image);
 
-    void deleteImage(String id);
+    void delete(String id);
 
-    void deleteImages(List<Image> images);
+    void delete(List<String> objectIds);
 }

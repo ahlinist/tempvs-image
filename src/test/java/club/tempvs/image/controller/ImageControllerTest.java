@@ -1,9 +1,7 @@
 package club.tempvs.image.controller;
 
 import club.tempvs.image.domain.Image;
-import club.tempvs.image.dto.ImagePayload;
 import club.tempvs.image.service.ImageService;
-import club.tempvs.image.util.ObjectFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,10 +23,6 @@ public class ImageControllerTest {
 
     @Mock
     private ImageService imageService;
-    @Mock
-    private ObjectFactory objectFactory;
-    @Mock
-    private ImagePayload imagePayload;
     @Mock
     private Image image, resultImage;
 
@@ -70,37 +63,19 @@ public class ImageControllerTest {
     public void testDelete() {
         String id = "id";
 
-        ResponseEntity result = imageController.delete(id);
+        imageController.delete(id);
 
-        verify(imageService).deleteImage(id);
-        verifyNoMoreInteractions(image, resultImage, imagePayload, objectFactory, imageService);
-
-        assertEquals("ResponseEntity with status 200 is returned", HttpStatus.OK, result.getStatusCode());
-        assertEquals("ResponseEntity with image list is returned", null, result.getBody());
+        verify(imageService).delete(id);
+        verifyNoMoreInteractions(imageService);
     }
 
     @Test
     public void testBulkDelete() {
-        List<Image> images = Arrays.asList(image, image);
+        List<String> objectIds = Arrays.asList("id1", "id2");
 
-        when(imagePayload.getImages()).thenReturn(images);
+        imageController.bulkDelete(objectIds);
 
-        ResponseEntity result = imageController.bulkDelete(imagePayload);
-
-        verify(imagePayload).getImages();
-        verify(imageService).deleteImages(images);
-        verifyNoMoreInteractions(image, resultImage, imagePayload, objectFactory, imageService);
-
-        assertEquals("ResponseEntity with status 200 is returned", HttpStatus.OK, result.getStatusCode());
-        assertEquals("ResponseEntity with image list is returned", null, result.getBody());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testBulkDeleteForEmptyPayload() {
-        List<Image> images = new ArrayList<>();
-
-        when(imagePayload.getImages()).thenReturn(images);
-
-        imageController.bulkDelete(imagePayload);
+        verify(imageService).delete(objectIds);
+        verifyNoMoreInteractions(imageService);
     }
 }

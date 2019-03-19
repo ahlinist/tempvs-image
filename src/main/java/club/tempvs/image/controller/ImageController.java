@@ -2,7 +2,6 @@ package club.tempvs.image.controller;
 
 import club.tempvs.image.api.UnauthorizedException;
 import club.tempvs.image.domain.Image;
-import club.tempvs.image.dto.ImagePayload;
 import club.tempvs.image.service.ImageService;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import lombok.RequiredArgsConstructor;
@@ -40,21 +39,13 @@ public class ImageController {
     }
 
     @DeleteMapping("/image/{id}")
-    public ResponseEntity delete(@PathVariable("id") String id) {
-        imageService.deleteImage(id);
-        return ResponseEntity.ok().build();
+    public void delete(@PathVariable("id") String id) {
+        imageService.delete(id);
     }
 
     @PostMapping("/image/delete")
-    public ResponseEntity bulkDelete(@RequestBody ImagePayload payload) {
-        List<Image> images = payload.getImages();
-
-        if (images == null || images.isEmpty()) {
-            throw new IllegalArgumentException("Empty deletion payload received");
-        }
-
-        imageService.deleteImages(images);
-        return ResponseEntity.ok().build();
+    public void bulkDelete(@RequestBody List<String> objectIds) {
+        imageService.delete(objectIds);
     }
 
     @ExceptionHandler(UnauthorizedException.class)

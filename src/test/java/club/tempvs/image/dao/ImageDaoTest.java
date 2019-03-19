@@ -2,7 +2,6 @@ package club.tempvs.image.dao;
 
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.dao.impl.GridFsImageDaoImpl;
-import club.tempvs.image.util.ObjectFactory;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -29,29 +28,19 @@ public class ImageDaoTest {
     private ImageDao imageDao;
 
     @Mock
-    private ObjectFactory objectFactory;
-
-    @Mock
     private GridFsTemplate gridFsTemplate;
-
     @Mock
     private GridFsResource gridFsResource;
-
     @Mock
     private GridFSFile gridFSFile;
-
     @Mock
-    private Image image, resultImage;
-
+    private Image image;
     @Mock
     private ObjectId bsonObjectId;
 
-    @Mock
-    private Query query;
-
     @Before
     public void setup() {
-        imageDao = new GridFsImageDaoImpl(objectFactory, gridFsTemplate);
+        imageDao = new GridFsImageDaoImpl(gridFsTemplate);
     }
 
     @Test
@@ -59,37 +48,35 @@ public class ImageDaoTest {
         String id = "id";
         byte[] data = "data".getBytes();
         InputStream inputStream = new ByteArrayInputStream(data);
+        Query query = new Query(Criteria.where("_id").is(id));
 
-        when(objectFactory.getInstance(Query.class, Criteria.where("_id").is(id))).thenReturn(query);
         when(gridFsTemplate.findOne(query)).thenReturn(gridFSFile);
         when(gridFsTemplate.getResource(gridFSFile)).thenReturn(gridFsResource);
         when(gridFsResource.getInputStream()).thenReturn(inputStream);
 
         byte[] result = imageDao.get(id);
 
-        verify(objectFactory).getInstance(Query.class, Criteria.where("_id").is(id));
         verify(gridFsTemplate).findOne(query);
         verify(gridFsTemplate).getResource(gridFSFile);
         verify(gridFsResource).getInputStream();
-        verifyNoMoreInteractions(image, resultImage, objectFactory, gridFsTemplate, bsonObjectId, query);
+        verifyNoMoreInteractions(image, gridFsTemplate, bsonObjectId);
 
         assertTrue("The expected byte array is returned", Arrays.equals(data, result));
     }
 
     @Test
-    public void testGetForNoResultFound() throws IOException {
+    public void testGetForNoResultFound() {
         String id = "id";
+        Query query = new Query(Criteria.where("_id").is(id));
 
-        when(objectFactory.getInstance(Query.class, Criteria.where("_id").is(id))).thenReturn(query);
         when(gridFsTemplate.findOne(query)).thenReturn(null);
 
         byte[] result = imageDao.get(id);
 
-        verify(objectFactory).getInstance(Query.class, Criteria.where("_id").is(id));
         verify(gridFsTemplate).findOne(query);
-        verifyNoMoreInteractions(image, resultImage, objectFactory, gridFsTemplate, bsonObjectId, query);
+        verifyNoMoreInteractions(image, gridFsTemplate, bsonObjectId);
 
-        assertNull("The expected byte array is returned", result);
+        assertNotNull("The result is not null", result);
     }
 
     @Test
@@ -97,12 +84,12 @@ public class ImageDaoTest {
         String content = "content";
         String imageInfo = "imageInfo";
         String fileName = "fileName";
+        Image resultImage = new Image(bsonObjectId.toString(), imageInfo, fileName);
 
         when(image.getContent()).thenReturn(content);
         when(image.getImageInfo()).thenReturn(imageInfo);
         when(image.getFileName()).thenReturn(fileName);
         when(gridFsTemplate.store(isA(InputStream.class), eq(fileName))).thenReturn(bsonObjectId);
-        when(objectFactory.getInstance(eq(Image.class), anyString(), eq(imageInfo), eq(fileName))).thenReturn(resultImage);
 
         Image result = imageDao.save(image);
 
@@ -110,8 +97,7 @@ public class ImageDaoTest {
         verify(image).getImageInfo();
         verify(image).getFileName();
         verify(gridFsTemplate).store(isA(InputStream.class), eq(fileName));
-        verify(objectFactory).getInstance(eq(Image.class), anyString(), eq(imageInfo), eq(fileName));
-        verifyNoMoreInteractions(image, resultImage, objectFactory, gridFsTemplate, bsonObjectId, query);
+        verifyNoMoreInteractions(image, gridFsTemplate, bsonObjectId);
 
         assertEquals("Image is returned as a result", resultImage, result);
     }
@@ -145,28 +131,11 @@ public class ImageDaoTest {
     @Test
     public void testDeleteById() {
         String id = "id";
-
-        when(objectFactory.getInstance(Query.class, Criteria.where("_id").is(id))).thenReturn(query);
+        Query query = new Query(Criteria.where("_id").is(id));
 
         imageDao.delete(id);
 
-        verify(objectFactory).getInstance(Query.class, Criteria.where("_id").is(id));
         verify(gridFsTemplate).delete(query);
-        verifyNoMoreInteractions(image, resultImage, objectFactory, gridFsTemplate, bsonObjectId, query);
-    }
-
-    @Test
-    public void testDeleteByImage() {
-        String id = "id";
-
-        when(image.getObjectId()).thenReturn(id);
-        when(objectFactory.getInstance(Query.class, Criteria.where("_id").is(id))).thenReturn(query);
-
-        imageDao.delete(image);
-
-        verify(image).getObjectId();
-        verify(objectFactory).getInstance(Query.class, Criteria.where("_id").is(id));
-        verify(gridFsTemplate).delete(query);
-        verifyNoMoreInteractions(image, resultImage, objectFactory, gridFsTemplate, bsonObjectId, query);
+        verifyNoMoreInteractions(image, gridFsTemplate, bsonObjectId);
     }
 }

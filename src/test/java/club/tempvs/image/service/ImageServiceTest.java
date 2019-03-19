@@ -3,14 +3,12 @@ package club.tempvs.image.service;
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.service.impl.ImageServiceImpl;
 import club.tempvs.image.dao.ImageDao;
-import club.tempvs.image.util.ObjectFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,11 +21,7 @@ public class ImageServiceTest {
     private ImageService imageService;
 
     @Mock
-    private ObjectFactory objectFactory;
-
-    @Mock
     private ImageDao imageDao;
-
     @Mock
     private Image image, resultImage;
 
@@ -46,7 +40,7 @@ public class ImageServiceTest {
         byte[] result = imageService.getImage(id);
 
         verify(imageDao).get(id);
-        verifyNoMoreInteractions(objectFactory);
+        verifyNoMoreInteractions(imageDao);
 
         assertEquals("The expected byte array is returned", resultArray, result);
     }
@@ -68,7 +62,7 @@ public class ImageServiceTest {
     public void testDeleteImage() {
         String id = "id";
 
-        imageService.deleteImage(id);
+        imageService.delete(id);
 
         verify(imageDao).delete(id);
         verifyNoMoreInteractions(imageDao, image, resultImage);
@@ -76,11 +70,11 @@ public class ImageServiceTest {
 
     @Test
     public void testDeleteImages() {
-        List<Image> images = Arrays.asList(image, image);
+        List<String> objectIds = Arrays.asList("id", "id");
 
-        imageService.deleteImages(images);
+        imageService.delete(objectIds);
 
-        verify(imageDao, times(2)).delete(image);
+        verify(imageDao, times(2)).delete("id");
         verifyNoMoreInteractions(imageDao, image, resultImage);
     }
 }

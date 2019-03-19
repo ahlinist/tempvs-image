@@ -9,6 +9,4 @@ public interface ImageDao {
     Image save(Image image);
 
     void delete(String id);
-
-    void delete(Image image);
 }

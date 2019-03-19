@@ -2,7 +2,6 @@ package club.tempvs.image.dao.impl;
 
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.dao.ImageDao;
-import club.tempvs.image.util.ObjectFactory;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -19,7 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -29,14 +27,13 @@ public class GridFsImageDaoImpl implements ImageDao {
     private static final Base64.Decoder BASE_64_DECODER = Base64.getDecoder();
     private static final String DEFAULT_IMAGE_NAME = "default_image.gif";
 
-    private final ObjectFactory objectFactory;
     private final GridFsTemplate gridFsTemplate;
 
     @HystrixCommand(commandProperties = {
             @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
     })
     public byte[] get(String id) {
-        Query query = buildIdLookupQuery(id);
+        Query query = new Query(Criteria.where(ID).is(id));
         GridFSFile gridFSFile = gridFsTemplate.findOne(query);
 
         if (gridFSFile == null) {
@@ -56,7 +53,7 @@ public class GridFsImageDaoImpl implements ImageDao {
             @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
     })
     public Image save(Image image) {
-        Optional<String> imageInfo = Optional.ofNullable(image.getImageInfo());
+        String imageInfo = image.getImageInfo();
         String content = image.getContent();
         String fileName = image.getFileName();
 
@@ -68,8 +65,7 @@ public class GridFsImageDaoImpl implements ImageDao {
 
         try(InputStream inputStream = new ByteArrayInputStream(bytes)) {
             ObjectId bsonObjectId = gridFsTemplate.store(inputStream, fileName);
-            String objectId = bsonObjectId.toString();
-            return objectFactory.getInstance(Image.class, objectId, imageInfo.orElse(""), fileName);
+            return new Image(bsonObjectId.toString(), imageInfo, fileName);
         } catch (IOException e) {
             return null;
         }
@@ -79,19 +75,8 @@ public class GridFsImageDaoImpl implements ImageDao {
             @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
     })
     public void delete(String id) {
-        Query query = buildIdLookupQuery(id);
+        Query query = new Query(Criteria.where(ID).is(id));
         gridFsTemplate.delete(query);
-    }
-
-    @HystrixCommand(commandProperties = {
-            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
-    })
-    public void delete(Image image) {
-        delete(image.getObjectId());
-    }
-
-    private Query buildIdLookupQuery(String id) {
-        return objectFactory.getInstance(Query.class, Criteria.where(ID).is(id));
     }
 
     private byte[] getDefaultImage() {
