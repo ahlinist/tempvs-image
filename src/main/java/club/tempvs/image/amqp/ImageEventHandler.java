@@ -8,12 +8,12 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import java.util.List;
 
 @RequiredArgsConstructor
-@EnableBinding(MessageProcessor.class)
-public class MessageHandler {
+@EnableBinding(ImageEventProcessor.class)
+public class ImageEventHandler {
 
     private final ImageService imageService;
 
-    @StreamListener(MessageProcessor.DELETE_IMAGES)
+    @StreamListener(ImageEventProcessor.DELETE_IMAGES)
     public void deleteImages(List<String> objectIds) {
         imageService.delete(objectIds);
     }
