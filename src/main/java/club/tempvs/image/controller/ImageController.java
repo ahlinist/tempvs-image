@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.MediaType.*;
@@ -38,11 +39,13 @@ public class ImageController {
         return imageService.store(payload);
     }
 
+    @Deprecated
     @DeleteMapping("/image/{id}")
     public void delete(@PathVariable("id") String id) {
-        imageService.delete(id);
+        imageService.delete(Arrays.asList(id));
     }
 
+    @Deprecated
     @PostMapping("/image/delete")
     public void bulkDelete(@RequestBody List<String> objectIds) {
         imageService.delete(objectIds);

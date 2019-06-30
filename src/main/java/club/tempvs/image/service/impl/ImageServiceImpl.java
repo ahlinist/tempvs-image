@@ -25,11 +25,6 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void delete(String id) {
-        imageDao.delete(id);
-    }
-
-    @Override
     public void delete(List<String> objectIds) {
         objectIds.stream().forEach(imageDao::delete);
     }

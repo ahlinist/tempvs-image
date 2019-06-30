@@ -59,16 +59,6 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void testDeleteImage() {
-        String id = "id";
-
-        imageService.delete(id);
-
-        verify(imageDao).delete(id);
-        verifyNoMoreInteractions(imageDao, image, resultImage);
-    }
-
-    @Test
     public void testDeleteImages() {
         List<String> objectIds = Arrays.asList("id", "id");
 

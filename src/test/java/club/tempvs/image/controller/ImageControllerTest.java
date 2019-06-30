@@ -65,7 +65,7 @@ public class ImageControllerTest {
 
         imageController.delete(id);
 
-        verify(imageService).delete(id);
+        verify(imageService).delete(Arrays.asList(id));
         verifyNoMoreInteractions(imageService);
     }
 

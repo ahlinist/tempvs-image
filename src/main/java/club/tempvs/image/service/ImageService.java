@@ -10,7 +10,5 @@ public interface ImageService {
 
     Image store(Image image);
 
-    void delete(String id);
-
     void delete(List<String> objectIds);
 }

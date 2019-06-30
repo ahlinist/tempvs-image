@@ -4,6 +4,19 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI}
+  cloud:
+    stream:
+      binders:
+        heroku_rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: ${AMQP_HOST}
+                port: 5672
+                username: ${AMQP_USER}
+                password: ${AMQP_PASSWORD}
+                virtual-host: ${AMQP_USER}
 eureka:
   client:
     serviceUrl:
