@@ -7,6 +7,6 @@ public interface ImageEventProcessor {
 
     String DELETE_IMAGES = "image.delete";
 
-    @Input("image.delete")
+    @Input(DELETE_IMAGES)
     SubscribableChannel delete();
 }
