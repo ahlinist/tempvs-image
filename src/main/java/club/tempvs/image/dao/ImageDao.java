@@ -1,12 +1,10 @@
 package club.tempvs.image.dao;
 
-import club.tempvs.image.domain.Image;
-
 public interface ImageDao {
 
     byte[] get(String id);
 
-    Image save(Image image);
+    void save(String content, String fileName, Object metaData);
 
     void delete(String id);
 }

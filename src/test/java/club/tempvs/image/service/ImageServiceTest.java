@@ -3,6 +3,8 @@ package club.tempvs.image.service;
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.service.impl.ImageServiceImpl;
 import club.tempvs.image.dao.ImageDao;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +25,8 @@ public class ImageServiceTest {
     @Mock
     private ImageDao imageDao;
     @Mock
-    private Image image, resultImage;
+    private Image image;
+
 
     @Before
     public void setup() {
@@ -47,15 +50,53 @@ public class ImageServiceTest {
 
     @Test
     public void testSave() {
-        when(imageDao.save(image)).thenReturn(resultImage);
+        String content = "content in base 64";
+        String fileName = "test.jpg";
+        String belongsTo = "item";
+        String entityId = "1";
+        String imageInfo = "info";
+        DBObject metaData = new BasicDBObject();
+        metaData.put("imageInfo", imageInfo);
+        metaData.put("entityId", entityId);
+        metaData.put("belongsTo", belongsTo);
 
-        Image result = imageService.store(image);
+        when(image.getContent()).thenReturn(content);
+        when(image.getFileName()).thenReturn(fileName);
+        when(image.getEntityId()).thenReturn(entityId);
+        when(image.getBelongsTo()).thenReturn(belongsTo);
+        when(image.getImageInfo()).thenReturn(imageInfo);
 
-        verify(imageDao).save(image);
-        verifyNoMoreInteractions(imageDao, image, resultImage);
+        imageService.store(image);
 
-        assertEquals("An updated image is returned", resultImage, result);
-        assertNotEquals("The result image is not the same object as an original one", resultImage, image);
+        verify(image).getContent();
+        verify(image).getFileName();
+        verify(image).getEntityId();
+        verify(image).getBelongsTo();
+        verify(image).getImageInfo();
+        verify(imageDao).save(content, fileName, metaData);
+        verifyNoMoreInteractions(imageDao, image);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSaveForEmptyContent() {
+        String content = "";
+        String fileName = "test.jpg";
+
+        when(image.getContent()).thenReturn(content);
+        when(image.getFileName()).thenReturn(fileName);
+
+        imageService.store(image);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSaveForEmptyFileName() {
+        String content = "content";
+        String fileName = "";
+
+        when(image.getContent()).thenReturn(content);
+        when(image.getFileName()).thenReturn(fileName);
+
+        imageService.store(image);
     }
 
     @Test
@@ -65,6 +106,6 @@ public class ImageServiceTest {
         imageService.delete(objectIds);
 
         verify(imageDao, times(2)).delete("id");
-        verifyNoMoreInteractions(imageDao, image, resultImage);
+        verifyNoMoreInteractions(imageDao, image);
     }
 }

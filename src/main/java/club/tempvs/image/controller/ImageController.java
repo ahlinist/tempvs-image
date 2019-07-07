@@ -35,8 +35,8 @@ public class ImageController {
     }
 
     @PostMapping("/image")
-    public Image store(@RequestBody Image payload) {
-        return imageService.store(payload);
+    public void store(@RequestBody Image payload) {
+        imageService.store(payload);
     }
 
     @Deprecated

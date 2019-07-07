@@ -82,50 +82,15 @@ public class ImageDaoTest {
     @Test
     public void testSave() {
         String content = "content";
-        String imageInfo = "imageInfo";
         String fileName = "fileName";
-        Image resultImage = new Image(bsonObjectId.toString(), imageInfo, fileName);
+        Object metaData = new Object();
 
-        when(image.getContent()).thenReturn(content);
-        when(image.getImageInfo()).thenReturn(imageInfo);
-        when(image.getFileName()).thenReturn(fileName);
-        when(gridFsTemplate.store(isA(InputStream.class), eq(fileName))).thenReturn(bsonObjectId);
+        when(gridFsTemplate.store(isA(InputStream.class), eq(fileName), eq(metaData))).thenReturn(bsonObjectId);
 
-        Image result = imageDao.save(image);
+        imageDao.save(content, fileName, metaData);
 
-        verify(image).getContent();
-        verify(image).getImageInfo();
-        verify(image).getFileName();
-        verify(gridFsTemplate).store(isA(InputStream.class), eq(fileName));
-        verifyNoMoreInteractions(image, gridFsTemplate, bsonObjectId);
-
-        assertEquals("Image is returned as a result", resultImage, result);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testSaveForEmptyContent() {
-        String content = "";
-        String imageInfo = "imageInfo";
-        String fileName = "fileName";
-
-        when(image.getContent()).thenReturn(content);
-        when(image.getImageInfo()).thenReturn(imageInfo);
-        when(image.getFileName()).thenReturn(fileName);
-
-        imageDao.save(image);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testSaveForEmptyFileName() {
-        String content = "content";
-        String imageInfo = "imageInfo";
-        String fileName = "";
-
-        when(image.getContent()).thenReturn(content);
-        when(image.getImageInfo()).thenReturn(imageInfo);
-        when(image.getFileName()).thenReturn(fileName);
-
-        imageDao.save(image);
+        verify(gridFsTemplate).store(isA(InputStream.class), eq(fileName), eq(metaData));
+        verifyNoMoreInteractions(gridFsTemplate, bsonObjectId);
     }
 
     @Test

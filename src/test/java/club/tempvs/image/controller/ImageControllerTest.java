@@ -24,7 +24,7 @@ public class ImageControllerTest {
     @Mock
     private ImageService imageService;
     @Mock
-    private Image image, resultImage;
+    private Image image;
 
     @Before
     public void setup() {
@@ -49,14 +49,10 @@ public class ImageControllerTest {
 
     @Test
     public void testStore() {
-        when(imageService.store(image)).thenReturn(resultImage);
-
-        Image result = imageController.store(image);
+        imageController.store(image);
 
         verify(imageService).store(image);
-        verifyNoMoreInteractions(image, resultImage, imageService);
-
-        assertEquals("ResponseEntity with image list is returned", resultImage, result);
+        verifyNoMoreInteractions(image, imageService);
     }
 
     @Test

@@ -1,13 +1,11 @@
 package club.tempvs.image.dao.impl;
 
-import club.tempvs.image.domain.Image;
 import club.tempvs.image.dao.ImageDao;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
@@ -52,22 +50,13 @@ public class GridFsImageDaoImpl implements ImageDao {
     @HystrixCommand(commandProperties = {
             @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
     })
-    public Image save(Image image) {
-        String imageInfo = image.getImageInfo();
-        String content = image.getContent();
-        String fileName = image.getFileName();
-
-        if (content == null || content.isEmpty() || fileName == null || fileName.isEmpty()) {
-            throw new IllegalArgumentException("Some of the required parameters: content or filename are missing");
-        }
-
+    public void save(String content, String fileName, Object metaData) {
         byte[] bytes = BASE_64_DECODER.decode(content);
 
         try(InputStream inputStream = new ByteArrayInputStream(bytes)) {
-            ObjectId bsonObjectId = gridFsTemplate.store(inputStream, fileName);
-            return new Image(bsonObjectId.toString(), imageInfo, fileName);
+            gridFsTemplate.store(inputStream, fileName, metaData);
         } catch (IOException e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
