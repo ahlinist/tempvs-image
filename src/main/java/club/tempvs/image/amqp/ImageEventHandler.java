@@ -17,4 +17,6 @@ public class ImageEventHandler {
     public void deleteImages(List<String> objectIds) {
         imageService.delete(objectIds);
     }
+
+    //TODO: Implement image deletion by query
 }
