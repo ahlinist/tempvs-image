@@ -3,8 +3,6 @@ package club.tempvs.image.service;
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.service.impl.ImageServiceImpl;
 import club.tempvs.image.dao.ImageDao;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +51,7 @@ public class ImageServiceTest {
     public void testGetAll() {
         String belongsTo = "belongsTo";
         String entityId = "entityId";
-        List<Image> images = ImmutableList.of(image, image);
+        List<Image> images = Arrays.asList(image, image);
 
         when(imageDao.getAll(belongsTo, entityId)).thenReturn(images);
 
@@ -72,11 +70,10 @@ public class ImageServiceTest {
         String belongsTo = "item";
         String entityId = "1";
         String imageInfo = "info";
-        Map<String, String> metaDataMap = ImmutableMap.of(
-                "imageInfo", imageInfo,
-                "entityId", entityId,
-                "belongsTo", belongsTo
-        );
+        Map<String, String> metaDataMap = new HashMap<>();
+        metaDataMap.put("imageInfo", imageInfo);
+        metaDataMap.put("entityId", entityId);
+        metaDataMap.put("belongsTo", belongsTo);
 
         when(image.getContent()).thenReturn(content);
         when(image.getFileName()).thenReturn(fileName);

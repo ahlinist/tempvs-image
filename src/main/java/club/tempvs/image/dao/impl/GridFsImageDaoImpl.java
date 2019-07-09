@@ -10,8 +10,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
@@ -43,9 +41,6 @@ public class GridFsImageDaoImpl implements ImageDao {
 
     private final GridFsTemplate gridFsTemplate;
 
-    @HystrixCommand(commandProperties = {
-            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
-    })
     public byte[] get(String id) {
         Query query = new Query(Criteria.where(ID).is(id));
         GridFSFile gridFSFile = gridFsTemplate.findOne(query);
@@ -63,9 +58,6 @@ public class GridFsImageDaoImpl implements ImageDao {
         }
     }
 
-    @HystrixCommand(commandProperties = {
-            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
-    })
     public List<Image> getAll(String belongsTo, String entityId) {
         Criteria belongsToCriteria = Criteria.where(BELONGS_TO_CRITERIA).is(belongsTo);
         Criteria entityIdCriteria = Criteria.where(ENTITY_ID_CRITERIA).is(entityId);
@@ -102,9 +94,6 @@ public class GridFsImageDaoImpl implements ImageDao {
         }
     }
 
-    @HystrixCommand(commandProperties = {
-            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
-    })
     public void save(String content, String fileName, Map metaDataMap) {
         DBObject metaData = new BasicDBObject(metaDataMap);
         byte[] bytes = BASE_64_DECODER.decode(content);
@@ -116,9 +105,6 @@ public class GridFsImageDaoImpl implements ImageDao {
         }
     }
 
-    @HystrixCommand(commandProperties = {
-            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
-    })
     public void delete(String id) {
         Query query = new Query(Criteria.where(ID).is(id));
         gridFsTemplate.delete(query);

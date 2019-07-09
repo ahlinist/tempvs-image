@@ -3,7 +3,6 @@ package club.tempvs.image.controller;
 import club.tempvs.image.api.UnauthorizedException;
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.service.ImageService;
-import com.netflix.hystrix.exception.HystrixRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,12 +58,6 @@ public class ImageController {
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public String throwUnauthorizedException(UnauthorizedException e) {
-        return processException(e);
-    }
-
-    @ExceptionHandler(HystrixRuntimeException.class)
-    @ResponseStatus(HttpStatus.REQUEST_TIMEOUT)
-    public String throwTimeOutException(HystrixRuntimeException e) {
         return processException(e);
     }
 

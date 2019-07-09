@@ -2,7 +2,6 @@ package club.tempvs.image.controller;
 
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.service.ImageService;
-import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +51,7 @@ public class ImageControllerTest {
     public void testGetImages() {
         String belongsTo = "item";
         String entityId = "1";
-        List<Image> images = ImmutableList.of(image, image);
+        List<Image> images = Arrays.asList(image, image);
 
         when(imageService.getImages(belongsTo, entityId)).thenReturn(images);
 
