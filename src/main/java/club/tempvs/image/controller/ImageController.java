@@ -20,33 +20,38 @@ import static org.springframework.http.MediaType.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/image")
 public class ImageController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 
     private final ImageService imageService;
 
-    @GetMapping(value = "/image/{id}", produces = IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/{id}", produces = IMAGE_JPEG_VALUE)
     public ResponseEntity getImage(@PathVariable("id") String id) {
         //TODO: apply caching
         byte[] image = imageService.getImage(id);
         return ResponseEntity.ok(image);
     }
 
-    @PostMapping("/image")
+    @GetMapping("/{belongsTo}/{entityId}")
+    public List<Image> getImages(@PathVariable String belongsTo, @PathVariable String entityId) {
+        return imageService.getImages(belongsTo, entityId);
+    }
+
+    @PostMapping
     public void store(@RequestBody Image payload) {
         imageService.store(payload);
     }
 
     @Deprecated
-    @DeleteMapping("/image/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") String id) {
         imageService.delete(Arrays.asList(id));
     }
 
     @Deprecated
-    @PostMapping("/image/delete")
+    @PostMapping("/delete")
     public void bulkDelete(@RequestBody List<String> objectIds) {
         imageService.delete(objectIds);
     }

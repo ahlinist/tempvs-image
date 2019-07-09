@@ -8,6 +8,8 @@ public interface ImageService {
 
     byte[] getImage(String id);
 
+    List<Image> getImages(String belongsTo, String entityId);
+
     void store(Image image);
 
     void delete(List<String> objectIds);

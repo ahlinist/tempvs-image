@@ -2,6 +2,7 @@ package club.tempvs.image.controller;
 
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.service.ImageService;
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +46,22 @@ public class ImageControllerTest {
 
         assertEquals("ResponseEntity with OK status is returned", HttpStatus.OK, result.getStatusCode());
         assertEquals("The 'img' byteArrays is returned as a body", image, result.getBody());
+    }
+
+    @Test
+    public void testGetImages() {
+        String belongsTo = "item";
+        String entityId = "1";
+        List<Image> images = ImmutableList.of(image, image);
+
+        when(imageService.getImages(belongsTo, entityId)).thenReturn(images);
+
+        List<Image> result = imageController.getImages(belongsTo, entityId);
+
+        verify(imageService).getImages(belongsTo, entityId);
+        verifyNoMoreInteractions(imageService);
+
+        assertEquals("Image list is returned", images, result);
     }
 
     @Test

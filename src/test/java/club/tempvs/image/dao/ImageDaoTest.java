@@ -1,7 +1,11 @@
 package club.tempvs.image.dao;
 
+import static java.util.Collections.emptyList;
+
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.dao.impl.GridFsImageDaoImpl;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -17,7 +21,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -44,7 +48,7 @@ public class ImageDaoTest {
     }
 
     @Test
-    public void testGet() throws IOException {
+    public void testGetForEmptyIterable() throws IOException {
         String id = "id";
         byte[] data = "data".getBytes();
         InputStream inputStream = new ByteArrayInputStream(data);
@@ -80,14 +84,32 @@ public class ImageDaoTest {
     }
 
     @Test
+    public void testGetAllForNoResult() {
+        String belongsTo = "belongsTo";
+        String entityId = "1";
+
+        when(gridFsTemplate.find(any(Query.class))).thenReturn(null);
+
+        List<Image> result = imageDao.getAll(belongsTo, entityId);
+
+        verify(gridFsTemplate).find(any(Query.class));
+        verifyNoMoreInteractions(gridFsTemplate);
+
+        assertEquals("Empty list is returned", emptyList(), result);
+    }
+
+    //TODO: test find all
+
+    @Test
     public void testSave() {
         String content = "content";
         String fileName = "fileName";
-        Object metaData = new Object();
+        Map<String, String> metaDataMap = new HashMap<>();
+        DBObject metaData = new BasicDBObject(metaDataMap);
 
         when(gridFsTemplate.store(isA(InputStream.class), eq(fileName), eq(metaData))).thenReturn(bsonObjectId);
 
-        imageDao.save(content, fileName, metaData);
+        imageDao.save(content, fileName, metaDataMap);
 
         verify(gridFsTemplate).store(isA(InputStream.class), eq(fileName), eq(metaData));
         verifyNoMoreInteractions(gridFsTemplate, bsonObjectId);

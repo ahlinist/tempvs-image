@@ -3,8 +3,8 @@ package club.tempvs.image.service;
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.service.impl.ImageServiceImpl;
 import club.tempvs.image.dao.ImageDao;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +12,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -26,7 +28,6 @@ public class ImageServiceTest {
     private ImageDao imageDao;
     @Mock
     private Image image;
-
 
     @Before
     public void setup() {
@@ -49,16 +50,33 @@ public class ImageServiceTest {
     }
 
     @Test
+    public void testGetAll() {
+        String belongsTo = "belongsTo";
+        String entityId = "entityId";
+        List<Image> images = ImmutableList.of(image, image);
+
+        when(imageDao.getAll(belongsTo, entityId)).thenReturn(images);
+
+        List<Image> result = imageDao.getAll(belongsTo, entityId);
+
+        verify(imageDao).getAll(belongsTo, entityId);
+        verifyNoMoreInteractions(imageDao);
+
+        assertEquals("Image list is returned", images, result);
+    }
+
+    @Test
     public void testSave() {
         String content = "content in base 64";
         String fileName = "test.jpg";
         String belongsTo = "item";
         String entityId = "1";
         String imageInfo = "info";
-        DBObject metaData = new BasicDBObject();
-        metaData.put("imageInfo", imageInfo);
-        metaData.put("entityId", entityId);
-        metaData.put("belongsTo", belongsTo);
+        Map<String, String> metaDataMap = ImmutableMap.of(
+                "imageInfo", imageInfo,
+                "entityId", entityId,
+                "belongsTo", belongsTo
+        );
 
         when(image.getContent()).thenReturn(content);
         when(image.getFileName()).thenReturn(fileName);
@@ -73,7 +91,7 @@ public class ImageServiceTest {
         verify(image).getEntityId();
         verify(image).getBelongsTo();
         verify(image).getImageInfo();
-        verify(imageDao).save(content, fileName, metaData);
+        verify(imageDao).save(content, fileName, metaDataMap);
         verifyNoMoreInteractions(imageDao, image);
     }
 
