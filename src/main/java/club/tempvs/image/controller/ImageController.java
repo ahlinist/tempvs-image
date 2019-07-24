@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.MediaType.*;
@@ -41,18 +40,6 @@ public class ImageController {
     @PostMapping
     public void store(@RequestBody Image payload) {
         imageService.store(payload);
-    }
-
-    @Deprecated
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") String id) {
-        imageService.delete(Arrays.asList(id));
-    }
-
-    @Deprecated
-    @PostMapping("/delete")
-    public void bulkDelete(@RequestBody List<String> objectIds) {
-        imageService.delete(objectIds);
     }
 
     @ExceptionHandler(UnauthorizedException.class)

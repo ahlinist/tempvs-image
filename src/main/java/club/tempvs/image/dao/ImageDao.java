@@ -13,5 +13,7 @@ public interface ImageDao {
 
     void save(String content, String fileName, Map metaDataMap);
 
-    void delete(String id);
+    void delete(List<String> objectIds);
+
+    void delete(String belongsTo, String entityId);
 }

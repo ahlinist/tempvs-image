@@ -50,6 +50,11 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void delete(List<String> objectIds) {
-        objectIds.stream().forEach(imageDao::delete);
+        imageDao.delete(objectIds);
+    }
+
+    @Override
+    public void delete(String belongsTo, String entityId) {
+        imageDao.delete(belongsTo, entityId);
     }
 }

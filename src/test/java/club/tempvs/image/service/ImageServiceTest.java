@@ -3,9 +3,9 @@ package club.tempvs.image.service;
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.service.impl.ImageServiceImpl;
 import club.tempvs.image.dao.ImageDao;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -20,17 +20,13 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class ImageServiceTest {
 
-    private ImageService imageService;
+    @InjectMocks
+    private ImageServiceImpl imageService;
 
     @Mock
     private ImageDao imageDao;
     @Mock
     private Image image;
-
-    @Before
-    public void setup() {
-        imageService = new ImageServiceImpl(imageDao);
-    }
 
     @Test
     public void testGetImage() {
@@ -115,12 +111,23 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void testDeleteImages() {
+    public void testDeleteImagesByIds() {
         List<String> objectIds = Arrays.asList("id", "id");
 
         imageService.delete(objectIds);
 
-        verify(imageDao, times(2)).delete("id");
+        verify(imageDao).delete(objectIds);
+        verifyNoMoreInteractions(imageDao, image);
+    }
+
+    @Test
+    public void testDeleteImagesForItem() {
+        String belongsTo = "belongsTo";
+        String entityId = "entityId";
+
+        imageService.delete(belongsTo, entityId);
+
+        verify(imageDao).delete(belongsTo, entityId);
         verifyNoMoreInteractions(imageDao, image);
     }
 }

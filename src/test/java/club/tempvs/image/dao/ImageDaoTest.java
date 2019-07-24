@@ -4,13 +4,17 @@ import static java.util.Collections.emptyList;
 
 import club.tempvs.image.domain.Image;
 import club.tempvs.image.dao.impl.GridFsImageDaoImpl;
+import club.tempvs.image.util.MongoHelper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import org.apache.commons.io.IOUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -29,41 +33,45 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class ImageDaoTest {
 
-    private ImageDao imageDao;
+    @InjectMocks
+    private GridFsImageDaoImpl imageDao;
 
     @Mock
     private GridFsTemplate gridFsTemplate;
     @Mock
+    private MongoHelper mongoHelper;
+
+    @Mock
     private GridFsResource gridFsResource;
+    @Mock
+    private GridFSFindIterable gridFSFindIterable;
     @Mock
     private GridFSFile gridFSFile;
     @Mock
-    private Image image;
-    @Mock
     private ObjectId bsonObjectId;
-
-    @Before
-    public void setup() {
-        imageDao = new GridFsImageDaoImpl(gridFsTemplate);
-    }
+    @Mock
+    private Document document;
+    @Mock
+    private Query query;
 
     @Test
-    public void testGetForEmptyIterable() throws IOException {
+    public void testGet() throws IOException {
         String id = "id";
         byte[] data = "data".getBytes();
         InputStream inputStream = new ByteArrayInputStream(data);
-        Query query = new Query(Criteria.where("_id").is(id));
 
+        when(mongoHelper.buildIdQuery(id)).thenReturn(query);
         when(gridFsTemplate.findOne(query)).thenReturn(gridFSFile);
         when(gridFsTemplate.getResource(gridFSFile)).thenReturn(gridFsResource);
         when(gridFsResource.getInputStream()).thenReturn(inputStream);
 
         byte[] result = imageDao.get(id);
 
+        verify(mongoHelper).buildIdQuery(id);
         verify(gridFsTemplate).findOne(query);
         verify(gridFsTemplate).getResource(gridFSFile);
         verify(gridFsResource).getInputStream();
-        verifyNoMoreInteractions(image, gridFsTemplate, bsonObjectId);
+        verifyNoMoreInteractions(mongoHelper, gridFsTemplate, bsonObjectId);
 
         assertTrue("The expected byte array is returned", Arrays.equals(data, result));
     }
@@ -73,14 +81,44 @@ public class ImageDaoTest {
         String id = "id";
         Query query = new Query(Criteria.where("_id").is(id));
 
+        when(mongoHelper.buildIdQuery(id)).thenReturn(query);
         when(gridFsTemplate.findOne(query)).thenReturn(null);
 
         byte[] result = imageDao.get(id);
 
+        verify(mongoHelper).buildIdQuery(id);
         verify(gridFsTemplate).findOne(query);
-        verifyNoMoreInteractions(image, gridFsTemplate, bsonObjectId);
+        verifyNoMoreInteractions(mongoHelper, gridFsTemplate, bsonObjectId);
 
         assertNotNull("The result is not null", result);
+    }
+
+    @Test
+    public void testGetAll() throws IOException {
+        String belongsTo = "belongsTo";
+        String entityId = "1";
+        List<GridFSFile> gridFSFiles = Arrays.asList(gridFSFile, gridFSFile);
+        InputStream inputStream = IOUtils.toInputStream("some test data for my input stream", "UTF-8");
+
+        when(mongoHelper.buildBulkQuery(belongsTo, entityId)).thenReturn(query);
+        when(gridFsTemplate.find(query)).thenReturn(gridFSFindIterable);
+        when(mongoHelper.collectGridFSFiles(gridFSFindIterable)).thenReturn(gridFSFiles);
+        when(gridFsTemplate.getResource(gridFSFile)).thenReturn(gridFsResource);
+        when(gridFSFile.getObjectId()).thenReturn(bsonObjectId);
+        when(gridFSFile.getMetadata()).thenReturn(document);
+        when(gridFsResource.getInputStream()).thenReturn(inputStream);
+
+        List<Image> result = imageDao.getAll(belongsTo, entityId);
+
+        verify(mongoHelper).buildBulkQuery(belongsTo, entityId);
+        verify(gridFsTemplate).find(query);
+        verify(mongoHelper).collectGridFSFiles(gridFSFindIterable);
+        verify(gridFsTemplate, times(2)).getResource(gridFSFile);
+        verifyNoMoreInteractions(mongoHelper, gridFsTemplate);
+
+        assertTrue("A list is returned", result instanceof List);
+        assertEquals("A list of 2 items is returned", 2, result.size());
+        assertTrue("A list Images is returned", result.iterator().next() instanceof Image);
     }
 
     @Test
@@ -88,17 +126,17 @@ public class ImageDaoTest {
         String belongsTo = "belongsTo";
         String entityId = "1";
 
-        when(gridFsTemplate.find(any(Query.class))).thenReturn(null);
+        when(mongoHelper.buildBulkQuery(belongsTo, entityId)).thenReturn(query);
+        when(gridFsTemplate.find(query)).thenReturn(null);
 
         List<Image> result = imageDao.getAll(belongsTo, entityId);
 
+        verify(mongoHelper).buildBulkQuery(belongsTo, entityId);
         verify(gridFsTemplate).find(any(Query.class));
-        verifyNoMoreInteractions(gridFsTemplate);
+        verifyNoMoreInteractions(mongoHelper, gridFsTemplate);
 
         assertEquals("Empty list is returned", emptyList(), result);
     }
-
-    //TODO: test find all
 
     @Test
     public void testSave() {
@@ -116,13 +154,29 @@ public class ImageDaoTest {
     }
 
     @Test
-    public void testDeleteById() {
-        String id = "id";
-        Query query = new Query(Criteria.where("_id").is(id));
+    public void testDeleteByIds() {
+        List<String> objectIds = Arrays.asList("id");
 
-        imageDao.delete(id);
+        when(mongoHelper.buildIdQuery(objectIds)).thenReturn(query);
 
+        imageDao.delete(objectIds);
+
+        verify(mongoHelper).buildIdQuery(objectIds);
         verify(gridFsTemplate).delete(query);
-        verifyNoMoreInteractions(image, gridFsTemplate, bsonObjectId);
+        verifyNoMoreInteractions(mongoHelper, gridFsTemplate, bsonObjectId);
+    }
+
+    @Test
+    public void testDeleteAllForItem() {
+        String belongsTo = "belongsTo";
+        String entityId = "entityId";
+
+        when(mongoHelper.buildBulkQuery(belongsTo, entityId)).thenReturn(query);
+
+        imageDao.delete(belongsTo, entityId);
+
+        verify(mongoHelper).buildBulkQuery(belongsTo, entityId);
+        verify(gridFsTemplate).delete(query);
+        verifyNoMoreInteractions(mongoHelper, gridFsTemplate, bsonObjectId);
     }
 }

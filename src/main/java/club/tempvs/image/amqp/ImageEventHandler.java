@@ -13,10 +13,16 @@ public class ImageEventHandler {
 
     private final ImageService imageService;
 
-    @StreamListener(ImageEventProcessor.DELETE_IMAGES)
-    public void deleteImages(List<String> objectIds) {
+    @StreamListener(ImageEventProcessor.DELETE_IMAGES_BY_IDS)
+    public void deleteImagesByIds(List<String> objectIds) {
         imageService.delete(objectIds);
     }
 
-    //TODO: Implement image deletion by query
+    @StreamListener(ImageEventProcessor.DELETE_IMAGES_FOR_ITEM)
+    public void deleteImagesForItem(String query) {
+        String[] splittedQuery = query.split("::");
+        String belongsTo = splittedQuery[0];
+        String entityId = splittedQuery[1];
+        imageService.delete(belongsTo, entityId);
+    }
 }
