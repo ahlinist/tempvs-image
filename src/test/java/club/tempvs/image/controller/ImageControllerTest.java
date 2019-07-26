@@ -58,12 +58,4 @@ public class ImageControllerTest {
 
         assertEquals("Image list is returned", images, result);
     }
-
-    @Test
-    public void testStore() {
-        imageController.store(image);
-
-        verify(imageService).store(image);
-        verifyNoMoreInteractions(image, imageService);
-    }
 }

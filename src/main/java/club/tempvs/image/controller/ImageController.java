@@ -37,11 +37,6 @@ public class ImageController {
         return imageService.getImages(belongsTo, entityId);
     }
 
-    @PostMapping
-    public void store(@RequestBody Image payload) {
-        imageService.store(payload);
-    }
-
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public String throwUnauthorizedException(UnauthorizedException e) {
