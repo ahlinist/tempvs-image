@@ -29,21 +29,6 @@ public class ImageServiceTest {
     private Image image;
 
     @Test
-    public void testGetImage() {
-        String id = "id";
-        byte[] resultArray = "data".getBytes();
-
-        when(imageDao.get(id)).thenReturn(resultArray);
-
-        byte[] result = imageService.getImage(id);
-
-        verify(imageDao).get(id);
-        verifyNoMoreInteractions(imageDao);
-
-        assertEquals("The expected byte array is returned", resultArray, result);
-    }
-
-    @Test
     public void testGetAll() {
         String belongsTo = "belongsTo";
         String entityId = "entityId";

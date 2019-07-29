@@ -17,12 +17,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -53,45 +51,6 @@ public class ImageDaoTest {
     private Document document;
     @Mock
     private Query query;
-
-    @Test
-    public void testGet() throws IOException {
-        String id = "id";
-        byte[] data = "data".getBytes();
-        InputStream inputStream = new ByteArrayInputStream(data);
-
-        when(mongoHelper.buildIdQuery(id)).thenReturn(query);
-        when(gridFsTemplate.findOne(query)).thenReturn(gridFSFile);
-        when(gridFsTemplate.getResource(gridFSFile)).thenReturn(gridFsResource);
-        when(gridFsResource.getInputStream()).thenReturn(inputStream);
-
-        byte[] result = imageDao.get(id);
-
-        verify(mongoHelper).buildIdQuery(id);
-        verify(gridFsTemplate).findOne(query);
-        verify(gridFsTemplate).getResource(gridFSFile);
-        verify(gridFsResource).getInputStream();
-        verifyNoMoreInteractions(mongoHelper, gridFsTemplate, bsonObjectId);
-
-        assertTrue("The expected byte array is returned", Arrays.equals(data, result));
-    }
-
-    @Test
-    public void testGetForNoResultFound() {
-        String id = "id";
-        Query query = new Query(Criteria.where("_id").is(id));
-
-        when(mongoHelper.buildIdQuery(id)).thenReturn(query);
-        when(gridFsTemplate.findOne(query)).thenReturn(null);
-
-        byte[] result = imageDao.get(id);
-
-        verify(mongoHelper).buildIdQuery(id);
-        verify(gridFsTemplate).findOne(query);
-        verifyNoMoreInteractions(mongoHelper, gridFsTemplate, bsonObjectId);
-
-        assertNotNull("The result is not null", result);
-    }
 
     @Test
     public void testGetAll() throws IOException {

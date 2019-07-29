@@ -7,14 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
-
-import static org.springframework.http.MediaType.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,13 +21,6 @@ public class ImageController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 
     private final ImageService imageService;
-
-    @GetMapping(value = "/{id}", produces = IMAGE_JPEG_VALUE)
-    public ResponseEntity getImage(@PathVariable("id") String id) {
-        //TODO: apply caching
-        byte[] image = imageService.getImage(id);
-        return ResponseEntity.ok(image);
-    }
 
     @GetMapping("/{belongsTo}/{entityId}")
     public List<Image> getImages(@PathVariable String belongsTo, @PathVariable String entityId) {

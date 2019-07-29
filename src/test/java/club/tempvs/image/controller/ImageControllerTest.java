@@ -7,8 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,22 +24,6 @@ public class ImageControllerTest {
     private ImageService imageService;
     @Mock
     private Image image;
-
-    @Test
-    public void testGetImage() {
-        String id = "id";
-        byte[] image = "img".getBytes();
-
-        when(imageService.getImage(id)).thenReturn(image);
-
-        ResponseEntity result = imageController.getImage(id);
-
-        verify(imageService).getImage(id);
-        verifyNoMoreInteractions(imageService);
-
-        assertEquals("ResponseEntity with OK status is returned", HttpStatus.OK, result.getStatusCode());
-        assertEquals("The 'img' byteArrays is returned as a body", image, result.getBody());
-    }
 
     @Test
     public void testGetImages() {

@@ -30,7 +30,6 @@ public class GridFsImageDaoImpl implements ImageDao {
 
     private static final Base64.Decoder BASE_64_DECODER = Base64.getDecoder();
     private static final Base64.Encoder BASE_64_ENCODER = Base64.getEncoder();
-    private static final String DEFAULT_IMAGE_NAME = "default_image.gif";
 
     private static final String IMAGE_INFO = "imageInfo";
     private static final String BELONGS_TO = "belongsTo";
@@ -38,24 +37,6 @@ public class GridFsImageDaoImpl implements ImageDao {
 
     private final GridFsTemplate gridFsTemplate;
     private final MongoHelper mongoHelper;
-
-    @Override
-    public byte[] get(String id) {
-        Query query = mongoHelper.buildIdQuery(id);
-        GridFSFile gridFSFile = gridFsTemplate.findOne(query);
-
-        if (gridFSFile == null) {
-            return getDefaultImage();
-        }
-
-        GridFsResource gridFsResource = gridFsTemplate.getResource(gridFSFile);
-
-        try(InputStream inputStream = gridFsResource.getInputStream()) {
-            return IOUtils.toByteArray(inputStream);
-        } catch (IOException e) {
-            return getDefaultImage();
-        }
-    }
 
     @Override
     public List<Image> getAll(String belongsTo, String entityId) {
@@ -90,6 +71,7 @@ public class GridFsImageDaoImpl implements ImageDao {
         gridFsTemplate.delete(query);
     }
 
+    @Override
     public void delete(String belongsTo, String entityId) {
         Query query = mongoHelper.buildBulkQuery(belongsTo, entityId);
         gridFsTemplate.delete(query);
@@ -111,16 +93,6 @@ public class GridFsImageDaoImpl implements ImageDao {
             return new Image(objectId, imageInfo, entityId, belongsTo, content, fileName);
         } catch (IOException e) {
             return null;
-        }
-    }
-
-    private byte[] getDefaultImage() {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-
-        try(InputStream inputStream = classloader.getResourceAsStream(DEFAULT_IMAGE_NAME)) {
-            return IOUtils.toByteArray(inputStream);
-        } catch (Exception e) {
-            return new byte[]{};
         }
     }
 }

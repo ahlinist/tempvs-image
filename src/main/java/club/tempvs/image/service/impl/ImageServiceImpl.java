@@ -23,11 +23,6 @@ public class ImageServiceImpl implements ImageService {
     private final ImageDao imageDao;
 
     @Override
-    public byte[] getImage(String id) {
-        return imageDao.get(id);
-    }
-
-    @Override
     public List<Image> getImages(String belongsTo, String entityId) {
         return imageDao.getAll(belongsTo, entityId);
     }

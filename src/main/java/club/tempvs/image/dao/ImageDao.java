@@ -7,8 +7,6 @@ import java.util.Map;
 
 public interface ImageDao {
 
-    byte[] get(String id);
-
     List<Image> getAll(String belongsTo, String entityId);
 
     void save(String content, String fileName, Map metaDataMap);
