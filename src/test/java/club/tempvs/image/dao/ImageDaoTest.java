@@ -48,8 +48,6 @@ public class ImageDaoTest {
     @Mock
     private ObjectId bsonObjectId;
     @Mock
-    private Document document;
-    @Mock
     private Query query;
 
     @Test
@@ -58,6 +56,7 @@ public class ImageDaoTest {
         String entityId = "1";
         List<GridFSFile> gridFSFiles = Arrays.asList(gridFSFile, gridFSFile);
         InputStream inputStream = IOUtils.toInputStream("some test data for my input stream", "UTF-8");
+        Document document = new Document();
 
         when(mongoHelper.buildBulkQuery(belongsTo, entityId)).thenReturn(query);
         when(gridFsTemplate.find(query)).thenReturn(gridFSFindIterable);

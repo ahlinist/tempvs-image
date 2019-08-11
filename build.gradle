@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.1.6.RELEASE'
+		springBootVersion = '2.1.7.RELEASE'
 	}
     
 	repositories {
@@ -19,9 +19,7 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'club.tempvs'
 version = '0.0.1-SNAPSHOT'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
@@ -51,9 +49,5 @@ dependencies {
 
 bootJar {
 	archiveBaseName = 'tempvs-image'
-	version =  project.version
-}
-
-task stage() {
-	dependsOn build
+	version =  ''
 }
