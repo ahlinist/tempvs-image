@@ -1,6 +1,6 @@
-package club.tempvs.image.auth;
+package club.tempvs.image.interceptor;
 
-import club.tempvs.image.api.UnauthorizedException;
+import club.tempvs.image.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;

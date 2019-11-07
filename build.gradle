@@ -1,19 +1,19 @@
 buildscript {
 	ext {
-		springBootVersion = '2.1.7.RELEASE'
+		springBootVersion = '2.2.0.RELEASE'
 	}
-    
 	repositories {
 		mavenCentral()
 	}
-    
 	dependencies {
-		classpath "io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE"
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("org.springframework.cloud:spring-cloud-contract-gradle-plugin:2.0.1.RELEASE")
 	}
 }
 
+
 apply plugin: 'java'
+apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
@@ -21,14 +21,28 @@ group = 'club.tempvs'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
-repositories {
-	mavenCentral()
+ext {
+	set('springCloudVersion', 'Hoxton.RC1')
 }
 
 dependencyManagement {
 	imports {
-		mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Greenwich.SR2'
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
+}
+
+configurations {
+	integrationTestImplementation.extendsFrom testImplementation
+	integrationTestRuntime.extendsFrom testRuntime
+
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
 }
 
 dependencies {
@@ -43,11 +57,29 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	compileOnly 'org.projectlombok:lombok'
 	//testing
-	testImplementation 'org.mockito:mockito-core:2.18.3'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.cloud:spring-cloud-stream-test-support'
+	testImplementation "org.spockframework:spock-core:1.3-groovy-2.5"
+	testImplementation "org.spockframework:spock-spring:1.3-groovy-2.5"
 }
 
 bootJar {
 	archiveBaseName = 'tempvs-image'
-	version =  ''
+	archiveVersion = ''
+}
+
+sourceSets {
+	integrationTest {
+		groovy {
+			compileClasspath += main.output + test.output
+			runtimeClasspath += main.output + test.output
+			srcDir file('src/integration-test/groovy')
+		}
+
+		resources.srcDir file('src/integration-test/resources')
+	}
+}
+
+task integrationTest(type: Test) {
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
 }

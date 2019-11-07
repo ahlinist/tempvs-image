@@ -1,6 +1,6 @@
 package club.tempvs.image.configuration;
 
-import club.tempvs.image.auth.AuthInterceptor;
+import club.tempvs.image.interceptor.AuthInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
