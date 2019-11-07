@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/image")
+@RequestMapping("/image")
 public class ImageController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
