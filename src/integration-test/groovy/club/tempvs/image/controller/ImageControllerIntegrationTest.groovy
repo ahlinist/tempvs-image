@@ -1,6 +1,7 @@
 package club.tempvs.image.controller
 
 import club.tempvs.image.service.ImageService
+import org.springframework.test.context.ActiveProfiles
 
 import static org.hamcrest.Matchers.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
@@ -15,6 +16,7 @@ import spock.lang.Specification
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class ImageControllerIntegrationTest extends Specification {
 
     private static final String BASE_64_ENCODED_STRING = 'YmFzZTY0IGVuY29kZWQgc3RyaW5n'
