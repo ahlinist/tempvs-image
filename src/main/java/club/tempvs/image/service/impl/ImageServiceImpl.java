@@ -6,7 +6,6 @@ import club.tempvs.image.dao.ImageDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,11 +35,17 @@ public class ImageServiceImpl implements ImageService {
             throw new IllegalArgumentException("Some of the required parameters: content or filename are missing");
         }
 
-        Map<String, String> metaDataMap = new HashMap<>();
-        metaDataMap.put(IMAGE_INFO, image.getImageInfo());
-        metaDataMap.put(ENTITY_ID, image.getEntityId());
-        metaDataMap.put(BELONGS_TO, image.getBelongsTo());
+        Map<String, String> metaDataMap = Map.of(
+                IMAGE_INFO, image.getImageInfo() != null ? image.getImageInfo() : "",
+                ENTITY_ID, image.getEntityId(),
+                BELONGS_TO, image.getBelongsTo());
         imageDao.save(content, fileName, metaDataMap);
+    }
+
+    @Override
+    public void replace(Image image) {
+        delete(image.getBelongsTo(), image.getEntityId());
+        store(image);
     }
 
     @Override

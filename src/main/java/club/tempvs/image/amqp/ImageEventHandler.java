@@ -19,6 +19,11 @@ public class ImageEventHandler {
         imageService.store(payload);
     }
 
+    @StreamListener(ImageEventProcessor.REPLACE_IMAGE)
+    public void replaceImage(Image payload) {
+        imageService.replace(payload);
+    }
+
     @StreamListener(ImageEventProcessor.DELETE_IMAGES_BY_IDS)
     public void deleteImagesByIds(List<String> objectIds) {
         imageService.delete(objectIds);

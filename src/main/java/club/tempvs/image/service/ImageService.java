@@ -10,6 +10,8 @@ public interface ImageService {
 
     void store(Image image);
 
+    void replace(Image image);
+
     void delete(List<String> objectIds);
 
     void delete(String belongsTo, String entityId);
